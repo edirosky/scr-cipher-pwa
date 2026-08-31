@@ -21,6 +21,7 @@
   th { color:var(--mu); font-size:10px; letter-spacing:2px; text-transform:uppercase; }
   td.code { color:var(--g); font-weight:bold; letter-spacing:3px; }
   td.kw { color:var(--ac); }
+  td.phon { color:var(--ac2); font-size:11px; }
   .warn { margin-top:14px; font-size:11px; color:var(--mu); line-height:1.6; border-left:2px solid var(--b); padding-left:10px; }
   #out { display:none; }
 </style>
@@ -44,7 +45,10 @@
       A palavra-chave é o único segredo. O código de 6 dígitos é derivado dela
       (SHA-256, domínio SCRKCV) e serve para o operador confirmar que digitou a
       palavra certa do dia. Gere palavras com ≥ 4 sílabas aleatórias ou ≥ 12
-      caracteres; nunca repita palavras entre missões; destrua linhas usadas.
+      caracteres; nunca repita palavras entre missões; destrua linhas usadas.<br>
+      ⚠ Acentos: o fonético normaliza (Ç→C, Ã→A). Prefira palavras sem acentos;
+      se a palavra os tiver, confirme a grafia exata por canal escrito — o KCV
+      recusa qualquer divergência na entrada.
     </div>
   </div>
 
@@ -57,6 +61,12 @@ async function sha256hex(msg){
 async function kcvCode(pass, dateStr){
   const h = await sha256hex(`SCRKCV|${pass}|${dateStr}`);
   return String(parseInt(h.slice(0,8),16)%1000000).padStart(6,'0');
+}
+// Fonético para transmissão da palavra-chave por rádio (letra a letra)
+const PHON={A:'Alfa',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliet',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu','0':'Zero','1':'One','2':'Two','3':'Three','4':'Four','5':'Five','6':'Six','7':'Seven','8':'Eight','9':'Niner',' ':'Space','-':'Dash','/':'Slash'};
+function kwPhonetic(kw){
+  const norm=kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+  return [...norm].map(c=>PHON[c]||('?' + c)).join('-');
 }
 const CONS='BDGKLMNPRSTVZ', VOG='AEIOU';
 function kwRadio(){
@@ -83,12 +93,12 @@ async function gerar(){
     rows.push({date, kw:norm, code:await kcvCode(norm,date)});
   }
   const t=document.getElementById('tbl');
-  t.innerHTML='<tr><th>Data (UTC)</th><th>Palavra-chave</th><th>Código 6 dígitos</th></tr>'+
+  t.innerHTML='<tr><th>Data (UTC)</th><th>Palavra-chave</th><th>Código 6 dígitos</th><th>Fonético (rádio)</th></tr>'+
     rows.map(r=>r.err
-      ? `<tr><td colspan="3" style="color:var(--ac2)">✗ linha inválida: ${r.err}</td></tr>`
-      : `<tr><td>${r.date}</td><td class="kw">${r.kw}</td><td class="code">${r.code}</td></tr>`).join('');
+      ? `<tr><td colspan="4" style="color:var(--ac2)">✗ linha inválida: ${r.err}</td></tr>`
+      : `<tr><td>${r.date}</td><td class="kw">${r.kw}</td><td class="code">${r.code}</td><td class="phon">${kwPhonetic(r.kw)}</td></tr>`).join('');
   document.getElementById('out').style.display='block';
-  window._lista=rows.filter(r=>!r.err).map(r=>`${r.date}  ${r.kw}  ${r.code}`).join('\n');
+  window._lista=rows.filter(r=>!r.err).map(r=>`${r.date}  ${r.kw}  ${r.code}  ${kwPhonetic(r.kw)}`).join('\n');
 }
 function copiar(){
   navigator.clipboard.writeText(window._lista||'').then(()=>alert('Lista copiada — envie por canal seguro.'));
