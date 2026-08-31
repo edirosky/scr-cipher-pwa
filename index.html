@@ -1003,6 +1003,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="tabs">
   <button class="tbtn e act" data-action="switch-tab" data-tab="enc" data-i18n="tab_encode">▲ ENCODE</button>
   <button class="tbtn d" data-action="switch-tab" data-tab="dec" data-i18n="tab_decode">▼ DECODE</button>
+  <button class="tbtn m" data-action="switch-tab" data-tab="fon" data-i18n="tab_phon">≋ FONÉTICO</button>
 </div>
 
 <div class="main">
@@ -1176,6 +1177,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       </div>
     </div>
 
+  </div>
+
+  <!-- Aba: ferramentas fonéticas avulsas -->
+  <div id="pane-fon" class="pane">
     <!-- Ferramentas fonéticas avulsas (inalteradas) -->
     <div class="sep-section"></div>
     <div class="st" data-i18n="phon_enc_title">Codificar texto PT</div>
@@ -1274,6 +1279,7 @@ const i18n = {
     // Tabs
     tab_encode: "▲ CODIFICAR",
     tab_decode: "▼ DESCODIFICAR",
+    tab_phon: "≋ FONÉTICO",
     // DTG
     dtg_title: "Grupo Data-Hora (DTG)",
     enc_date_label: "Data (UTC)",
@@ -1408,6 +1414,7 @@ const i18n = {
     // Tabs
     tab_encode: "▲ ENCODE",
     tab_decode: "▼ DECODE",
+    tab_phon: "≋ PHONETIC",
     // DTG
     dtg_title: "Date-Time Group (DTG)",
     enc_date_label: "Date (UTC)",
@@ -2424,7 +2431,7 @@ function renderDecodeMeta(targetId, items) {
 function buildLinesFromFields() {
   const read = id => (document.getElementById(id)?.value || '').trim();
   const lines = {};
-  ['ser','chk','kd','l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'].forEach(k=>{
+  ['ser','chk','kd','l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12','l13'].forEach(k=>{
     const v=read('f-'+k);
     if(v) lines[k.toUpperCase()]=v;
   });
@@ -2432,7 +2439,7 @@ function buildLinesFromFields() {
 }
 
 function bodyFromLines(lines) {
-  return ['KD','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12']
+  return ['KD','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13']
     .filter(k=>lines[k])
     .map(k=>`${k}:${lines[k]}`)
     .join('\n');
@@ -2491,7 +2498,7 @@ async function doDecodeFields(){
 }
 
 function clearFields() {
-  ['ser','chk','kd','l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'].forEach(sfx => {
+  ['ser','chk','kd','l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12','l13'].forEach(sfx => {
     const el = document.getElementById('f-'+sfx);
     if(el) el.value = '';
   });
@@ -2502,7 +2509,24 @@ function clearFields() {
 // ══════════════════════════════════════════════════════
 //  SELF-TEST / PHONETIC FERRAMENTAS / EXPORT / IMPORT
 // ══════════════════════════════════════════════════════
-async function selfTest(){await doEncode();document.getElementById('d-in').value=document.getElementById('enc-pre').textContent;sw('dec',document.querySelector('.tbtn.d'));setDecInputMode('report');await doDecode();}
+async function selfTest(){
+  await doEncode();
+  const report=document.getElementById('enc-pre').textContent;
+  const NL=String.fromCharCode(10);
+  document.getElementById('d-in').value=report;
+  sw('dec',document.querySelector('.tbtn.d'));
+  setDecInputMode('report');
+  await doDecode();
+  const okReport=document.getElementById('dec-meta').textContent.includes('CHK OK');
+  clearFields();
+  const FM={SER:'f-ser',CHK:'f-chk',KD:'f-kd',L1:'f-l1',L2:'f-l2',L3:'f-l3',L4:'f-l4',L5:'f-l5',L6:'f-l6',L7:'f-l7',L8:'f-l8',L9:'f-l9',L10:'f-l10',L11:'f-l11',L12:'f-l12',L13:'f-l13'};
+  report.split(NL).forEach(line=>{const i=line.indexOf(':');if(i<0)return;const el=document.getElementById(FM[line.slice(0,i).trim().toUpperCase()]);if(el)el.value=line.slice(i+1).trim();});
+  setDecInputMode('fields');
+  await doDecodeFields();
+  const okFields=document.getElementById('fields-meta').textContent.includes('CHK OK');
+  const btn=document.querySelector('[data-action="self-test"]');
+  flashButton(btn,(okReport&&okFields)?(iLang()==='pt'?'✓ CICLO OK: REPORT + CAMPOS':'✓ CYCLE OK: REPORT + FIELDS'):(iLang()==='pt'?'⚠ FALHOU: '+(okReport?'CAMPOS':'REPORT'):'⚠ FAILED: '+(okReport?'FIELDS':'REPORT')));
+}
 function phEncFull(){if(!KEY){alert(iLang()==='pt'?'Ative a chave.':'Activate key.');return;}document.getElementById('ph-enc-out').value=encodeTextField(document.getElementById('ph-plain').value,KEY);}
 function phDecFull(){if(!KEY){alert(iLang()==='pt'?'Ative a chave.':'Activate key.');return;}document.getElementById('ph-dec-out').value=decodeTextField(document.getElementById('ph-dec-in').value,KEY);}
 function cpField(id,btn){safeCopy(document.getElementById(id).value).then(()=>flashButton(btn,iLang()==='pt'?'✓ COPIADO':'✓ COPIED'));}
@@ -3211,7 +3235,6 @@ function loadDecodeExample() {
 }
 
 function loadFieldsExample() {
-  showExampleNotice(() => {
     const f = EX_FIELDS;
     const set = (id, val) => { const el=document.getElementById(id); if(el) el.value=val; };
     set('f-ser', f.ser); set('f-chk', f.chk); set('f-kd', f.kd);
@@ -3223,7 +3246,6 @@ function loadFieldsExample() {
     sw('dec', document.querySelector('.tbtn.d'));
     const btn = document.querySelector('[data-action="load-fields-example"]');
     if(btn) flashButton(btn, iLang()==='pt' ? '✓ EXEMPLO CARREGADO' : '✓ EXAMPLE LOADED');
-  });
 }
 
 </script>
