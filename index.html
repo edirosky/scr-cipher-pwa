@@ -1225,7 +1225,7 @@ if (typeof window !== 'undefined') { window.topoData = topoData; }
 //  EARLY STATE (must be before INIT)
 // ══════════════════════════════════════════════════════
 let currentMode  = localStorage.getItem('scr_mode')  || 'pt_pt';
-let currentTheme = localStorage.getItem('scr_theme') || 'light';
+let currentTheme = localStorage.getItem('scr_theme') || 'dark';
 let posMapMode = (navigator.onLine ? 'online' : 'offline');
 let posMap = null;
 let posMapMarker = null;
@@ -3160,92 +3160,38 @@ function loadEncodeExample() {
   if(btn) flashButton(btn, iLang()==='pt' ? '✓ EXEMPLO CARREGADO' : '✓ EXAMPLE LOADED');
 }
 
-// Pre-baked encoded reports for decode example
-// These were generated with password "COSMAR" on 2026-04-27
-// The key derived: SHA256("COSMAR27042026 28COSMAR").slice(0,16)
-// Plain data: same as EX_PLAIN above (PT vessel name)
-const EX_ENCODED_REPORT = `SER:20260427-EX1
-CHK:DE38
-KD:2026-04-27
-L1:892292Z APR 24
-L2:76638507 079001489
-L3:614
-L4:123
-L5:Tango_Echo_Romeo_Sierra_Echo_Delta_Mike_Hotel//Bravo_Bravo//Oscar_India_India_Sierra_Foxtrot_Juliet_Mike_Charlie_November
-L6:G
-L7:I
-L8:G
-L9:5321402 / 114023218
-L10:G
-L11:L
-L12:G|India_Mike_Alpha_Quebec_Victor_Charlie_Yankee_Sierra_Yankee_Bravo//Golf_Juliet_Papa_Hotel_Whiskey_Yankee_X-ray_Alpha//Romeo_Uniform_Quebec//Bravo_Yankee_Delta_Bravo_Romeo_Whiskey_Golf_X-ray//3//Lima_Hotel_Mike_Papa_Tango_Bravo_Echo_November_Romeo_Uniform_Quebec//November//Papa_Delta_Oscar_Victor_Golf`;
-
-// Pre-baked individual fields matching same data
-const EX_FIELDS = {
-  ser: '20260427-EX1',
-  chk: 'DE38',
-  kd:  '2026-04-27',
-  l1:  '892292Z APR 24',
-  l2:  '76638507 079001489',
-  l3:  '614',
-  l4:  '123',
-  l5:  'Tango_Echo_Romeo_Sierra_Echo_Delta_Mike_Hotel//Bravo_Bravo//Oscar_India_India_Sierra_Foxtrot_Juliet_Mike_Charlie_November',
-  l6:  'G',
-  l7:  'I',
-  l8:  'G',
-  l9:  '5321402 / 114023218',
-  l10: 'G',
-  l11: 'L',
-  l12: 'G|India_Mike_Alpha_Quebec_Victor_Charlie_Yankee_Sierra_Yankee_Bravo//Golf_Juliet_Papa_Hotel_Whiskey_Yankee_X-ray_Alpha//Romeo_Uniform_Quebec//Bravo_Yankee_Delta_Bravo_Romeo_Whiskey_Golf_X-ray//3//Lima_Hotel_Mike_Papa_Tango_Bravo_Echo_November_Romeo_Uniform_Quebec//November//Papa_Delta_Oscar_Victor_Golf'
-};
-
-// Notice box shown when loading the example explaining the password needed
-function showExampleNotice(then) {
-  const pass = loadStoredPass();
-  const needPass = !pass;
-  const msg = iLang()==='pt'
-    ? `Este exemplo foi codificado com a passe "COSMAR" e a data 2026-04-27.
-
-Resultado esperado ao descodificar:
-  Navio: Pescador do Atlantico
-  Posicao: 14deg55.230N  023deg31.140W
-  Bandeira: B Senegal  Tipo: D Pesca  Sensor: B AIS
-  LPoC: B Dakar  NPoC: G Accra
-  Info: B Movimento suspeito\n\n${needPass ? 'Não tem passe nesta sessão — abra a chave de sessão, introduza "COSMAR" e a data 2026-04-27, e depois tente de novo.' : 'Se a sua passe for diferente de "COSMAR", a descodificação não irá funcionar correctamente para este exemplo.\n\nDeseja continuar?'}`
-    : `This example was encoded with password "COSMAR" and date 2026-04-27.
-
-Expected result after decoding:
-  Vessel: Pescador do Atlantico
-  Position: 14deg55.230N  023deg31.140W
-  Flag: B Senegal  Type: D Fishing  Sensor: B AIS
-  LPoC: B Dakar  NPoC: G Accra
-  Info: B Suspicious movement\n\n${needPass ? 'No session password — open the session key, enter "COSMAR" with date 2026-04-27, then try again.' : 'If your password is not "COSMAR", decoding will not work for this example.\n\nContinue?'}`;
-  if(needPass) { alert(msg); return; }
-  if(confirm(msg)) then();
+// Exemplos de descodificação: gerados na hora com a CHAVE DE SESSÃO ATUAL,
+// cifrando o exemplo em claro (EX_PLAIN) — sem palavra-passe fixa nem popups.
+async function buildExampleReport(){
+  const ids=['e-date','e-time','e-latd','e-latmi','e-latmd','e-lond','e-lonmi','e-lonmd','e-crs','e-spd','e-nam','e-imo','e-mmsi','e-flg','e-typ','e-sns','e-lpc','e-npc','e-add','e-txt'];
+  const saved={}; ids.forEach(i=>{const el=document.getElementById(i);if(el)saved[i]=el.value;});
+  const sh={lat:latHem,lon:lonHem};
+  loadEncodeExample();
+  await doEncode();
+  const report=document.getElementById('enc-pre').textContent;
+  ids.forEach(i=>{const el=document.getElementById(i);if(el&&saved[i]!==undefined)el.value=saved[i];});
+  setHem('lat',sh.lat); setHem('lon',sh.lon);
+  if(typeof updatePosPreview==='function')updatePosPreview();
+  return report;
 }
-
-function loadDecodeExample() {
-  showExampleNotice(() => {
-    document.getElementById('d-in').value = EX_ENCODED_REPORT;
-    setDecInputMode('report');
-    sw('dec', document.querySelector('.tbtn.d'));
-    const btn = document.querySelector('[data-action="load-decode-example"]');
-    if(btn) flashButton(btn, iLang()==='pt' ? '✓ EXEMPLO CARREGADO' : '✓ EXAMPLE LOADED');
-  });
+async function loadDecodeExample(){
+  const report=await buildExampleReport();
+  document.getElementById('d-in').value=report;
+  setDecInputMode('report');
+  sw('dec',document.querySelector('.tbtn.d'));
+  const btn=document.querySelector('[data-action="load-decode-example"]');
+  if(btn)flashButton(btn,iLang()==='pt'?'✓ EXEMPLO CIFRADO COM A CHAVE ATUAL':'✓ EXAMPLE CIPHERED WITH CURRENT KEY');
 }
-
-function loadFieldsExample() {
-    const f = EX_FIELDS;
-    const set = (id, val) => { const el=document.getElementById(id); if(el) el.value=val; };
-    set('f-ser', f.ser); set('f-chk', f.chk); set('f-kd', f.kd);
-    set('f-l1', f.l1);   set('f-l2', f.l2);   set('f-l3', f.l3);
-    set('f-l4', f.l4);   set('f-l5', f.l5);   set('f-l6', f.l6);
-    set('f-l7', f.l7);   set('f-l8', f.l8);   set('f-l9', f.l9);
-    set('f-l10', f.l10); set('f-l11', f.l11); set('f-l12', f.l12);
-    setDecInputMode('fields');
-    sw('dec', document.querySelector('.tbtn.d'));
-    const btn = document.querySelector('[data-action="load-fields-example"]');
-    if(btn) flashButton(btn, iLang()==='pt' ? '✓ EXEMPLO CARREGADO' : '✓ EXAMPLE LOADED');
+async function loadFieldsExample(){
+  const report=await buildExampleReport();
+  clearFields();
+  const FM={SER:'f-ser',CHK:'f-chk',KD:'f-kd',L1:'f-l1',L2:'f-l2',L3:'f-l3',L4:'f-l4',L5:'f-l5',L6:'f-l6',L7:'f-l7',L8:'f-l8',L9:'f-l9',L10:'f-l10',L11:'f-l11',L12:'f-l12',L13:'f-l13'};
+  const NL=String.fromCharCode(10);
+  report.split(NL).forEach(line=>{const i=line.indexOf(':');if(i<0)return;const el=document.getElementById(FM[line.slice(0,i).trim().toUpperCase()]);if(el)el.value=line.slice(i+1).trim();});
+  setDecInputMode('fields');
+  sw('dec',document.querySelector('.tbtn.d'));
+  const btn=document.querySelector('[data-action="load-fields-example"]');
+  if(btn)flashButton(btn,iLang()==='pt'?'✓ EXEMPLO CIFRADO COM A CHAVE ATUAL':'✓ EXAMPLE CIPHERED WITH CURRENT KEY');
 }
 
 </script>
