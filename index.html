@@ -1665,6 +1665,7 @@ function hasUnknownEscape(t){return/\[[A-Z]{2}\]/.test(t);}
 // ══════════════════════════════════════════════════════
 const NATO={A:'Alpha',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliet',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu','[':'OPEN',']':'CLOSE'};
 const NATO_REV={}; for(const[k,v] of Object.entries(NATO))NATO_REV[v.toUpperCase()]=k;
+NATO_REV['ALFA']='A';NATO_REV['XRAY']='X';NATO_REV['CHARLEY']='C';NATO_REV['JULETT']='J';
 function tokenToNato(t){return NATO[t]||t;}
 function natoToToken(w){const u=w.trim().toUpperCase();if(u.length===1)return u;return NATO_REV[u]||u[0];}
 function tokensToPhon(tokens){
@@ -1676,7 +1677,18 @@ function tokensToPhon(tokens){
 function phonToTokens(pho){
   const words=pho.replace(/\s*\/\/\s*/g,'//').split('//');
   const tokens=[];
-  words.forEach((w,wi)=>{if(wi>0)tokens.push(' ');w.split(/\s*_\s*/).forEach(p=>tokens.push(natoToToken(p)));});
+  words.forEach((w,wi)=>{
+    if(wi>0)tokens.push(' ');
+    w.split(/[\s_]+/).filter(Boolean).forEach(pt=>{
+      const pu=pt.toUpperCase();
+      if(pu==='RAY'&&tokens[tokens.length-1]==='X')return; // "X ray" escrito em duas palavras
+      if(pu.length===1||NATO_REV[pu]!==undefined){
+        tokens.push(natoToToken(pt));return;
+      }
+      if(/^[A-Z]+$/.test(pu)){for(const c of pu)tokens.push(c);return;} // letras coladas: abad -> A B A D
+      tokens.push(natoToToken(pt));
+    });
+  });
   return tokens;
 }
 

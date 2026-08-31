@@ -7,7 +7,7 @@
    - Tiles OSM: stale-while-revalidate com limite LRU
    ============================================================ */
 
-const VERSION = "v2";
+const VERSION = "v3";
 const SHELL_CACHE = `scr-cipher-shell-${VERSION}`;
 const TILE_CACHE = `scr-cipher-tiles-${VERSION}`;
 const MAX_TILE_ENTRIES = 600;
