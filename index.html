@@ -1700,6 +1700,8 @@ async function sha256hex(msg){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
 }
 function febDays(y){return(y%4===0&&(y%100!==0||y%400===0))?29:28;}
+// Normalização da palavra-chave: hífens, espaços e acentos NÃO fazem parte do segredo
+function normPass(s){return String(s||'').normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/[-\s]/g,'').toUpperCase();}
 async function deriveKey(pass,dateStr){
   const[y,m,d]=dateStr.split('-');const feb=febDays(parseInt(y));
   return(await sha256hex(`${pass}${d}${m}${y} ${feb}${pass}`)).slice(0,16);
@@ -1743,14 +1745,14 @@ function openKeyModal(){document.getElementById('key-modal').classList.remove('h
 function closeModal(){document.getElementById('key-modal').classList.add('hidden');}
 function togglePass(){const i=document.getElementById('modal-pass');i.type=i.type==='password'?'text':'password';}
 async function previewKey(){
-  const pass=document.getElementById('modal-pass').value.trim().toUpperCase();
+  const pass=normPass(document.getElementById('modal-pass').value);
   const date=document.getElementById('modal-date').value;
   const el=document.getElementById('modal-derived');
   if(!pass||!date){el.textContent='—';return;}
   el.textContent=await deriveKey(pass,date);
 }
 async function applyKey(){
-  const pass=document.getElementById('modal-pass').value.trim().toUpperCase();
+  const pass=normPass(document.getElementById('modal-pass').value);
   const date=document.getElementById('modal-date').value;
   if(!pass||!date){alert(t('missing_prefix')+'password/passe + date/data.');return;}
   if(pendingAccessCode){
