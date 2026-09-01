@@ -887,6 +887,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
     input[type=date]::-webkit-calendar-picker-indicator, input[type=time]::-webkit-calendar-picker-indicator { filter: invert(0.6) sepia(1) saturate(2) hue-rotate(180deg); cursor:pointer; }
     .sep-section { border-top:1px solid var(--b); margin:20px 0 12px; padding-top:4px; }
     .tbtn.m.act { color:var(--pu); border-bottom-color:var(--pu); }
+    .tbtn.h.act { color:var(--yw); border-bottom-color:var(--yw); }
+    .help-intro { font-size:12px; color:var(--mu); line-height:1.7; margin-bottom:14px; border-left:2px solid var(--b); padding-left:10px; }
+    .faq { margin-bottom:14px; }
+    .faq-q { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; color:var(--ac); text-transform:uppercase; margin-bottom:3px; }
+    .faq-a { font-size:12px; color:var(--tx); line-height:1.7; padding-left:10px; border-left:2px solid var(--b); }
     .dec-mode-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase; padding:7px 14px; background:transparent; border:1px solid var(--b); color:var(--mu); cursor:pointer; border-radius:var(--rad); transition:all .2s; }
     .dec-mode-btn.act { background:var(--ac2); border-color:var(--ac2); color:var(--bg); }
     .dec-mode-btn:hover { border-color:var(--mu); color:var(--tx); }
@@ -1004,6 +1009,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <button class="tbtn e act" data-action="switch-tab" data-tab="enc" data-i18n="tab_encode">▲ ENCODE</button>
   <button class="tbtn d" data-action="switch-tab" data-tab="dec" data-i18n="tab_decode">▼ DECODE</button>
   <button class="tbtn m" data-action="switch-tab" data-tab="fon" data-i18n="tab_phon">≋ FONÉTICO</button>
+  <button class="tbtn h" data-action="switch-tab" data-tab="help" data-i18n="tab_help">? AJUDA</button>
 </div>
 
 <div class="main">
@@ -1195,6 +1201,25 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="fld" style="margin-top:10px"><label data-i18n="phon_dec_result_label">Texto descodificado</label><textarea id="ph-dec-out" rows="4" readonly style="color:var(--g)"></textarea></div>
     <button class="btn bc" style="margin-top:6px;width:100%" data-action="copy-field" data-copy-target="ph-dec-out" data-i18n="phon_dec_copy_btn">⊕ COPIAR</button>
   </div>
+
+  <!-- Aba: ajuda e FAQ -->
+  <div id="pane-help" class="pane">
+    <div class="st" data-i18n="help_title">AJUDA · PERGUNTAS FREQUENTES</div>
+    <div class="help-intro" data-i18n="help_intro"></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q1"></div><div class="faq-a" data-i18n="help_a1"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q2"></div><div class="faq-a" data-i18n="help_a2"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q3"></div><div class="faq-a" data-i18n="help_a3"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q4"></div><div class="faq-a" data-i18n="help_a4"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q5"></div><div class="faq-a" data-i18n="help_a5"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q6"></div><div class="faq-a" data-i18n="help_a6"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q7"></div><div class="faq-a" data-i18n="help_a7"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q8"></div><div class="faq-a" data-i18n="help_a8"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q9"></div><div class="faq-a" data-i18n="help_a9"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q10"></div><div class="faq-a" data-i18n="help_a10"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q11"></div><div class="faq-a" data-i18n="help_a11"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q12"></div><div class="faq-a" data-i18n="help_a12"></div></div>
+    <div class="faq"><div class="faq-q" data-i18n="help_q13"></div><div class="faq-a" data-i18n="help_a13"></div></div>
+  </div>
 </div>
 
 
@@ -1280,6 +1305,35 @@ const i18n = {
     tab_encode: "▲ CODIFICAR",
     tab_decode: "▼ DESCODIFICAR",
     tab_phon: "≋ FONÉTICO",
+    tab_help: "? AJUDA",
+    help_title: "AJUDA · PERGUNTAS FREQUENTES",
+    help_intro: "Guia rápido do SCR CIPHER. Depois da primeira abertura, a app funciona sem internet. A palavra-chave é o único segredo — o resto é procedimento.",
+    help_q1: "Como começo?",
+    help_a1: "1) Digita o código de 6 dígitos de hoje (da lista de chaves).<br>2) Na janela que abre, escreve a palavra-chave do dia e confirma a data UTC.<br>3) Se o código bater com a palavra, a chave ativa e o app abre.",
+    help_q2: "De onde vem o código de 6 dígitos?",
+    help_a2: "É derivado da palavra-chave e da data (SHA-256). Quem gera a lista calcula-o; sem a lista não há forma de o adivinhar. Serve para confirmares que digitaste a palavra certa do dia.",
+    help_q3: "A palavra-chave leva hífens?",
+    help_a3: "Hífens, espaços e acentos não fazem parte da chave: TE-LA-RU-PU, te la ru pu e telarupu são a mesma palavra. Transmite e digita sempre a forma da lista.",
+    help_q4: "Erro: PALAVRA-CHAVE NÃO CORRESPONDE AO CÓDIGO",
+    help_a4: "A palavra escrita não bate com o código introduzido: gralha na palavra, código de outro dia, ou linha errada da lista. Confirma com o custódio das chaves antes de repetir.",
+    help_q5: "O que é o campo KD?",
+    help_a5: "É a data da chave (AAAA-MM-DD) que viaja no report. Permite ao descodificador re-derivar a chave certa mesmo quando descodifica no dia seguinte.",
+    help_q6: "O que é o CHK e para que serve?",
+    help_a6: "Checksum do corpo da mensagem. Deteta ruído e quebras de rádio: se aparecer CHK MISMATCH, pede retransmissão — «SEND AGAIN <SER>». Nunca descodifiques um report com CHK errado.",
+    help_q7: "Report completo ou campos individuais?",
+    help_a7: "Report: cola o texto todo e descodifica de uma vez.<br>Campos: preenche apenas as linhas que recebeste — útil quando o rádio passou parte da mensagem ou queres descodificar campo a campo.",
+    help_q8: "Como escrevo o fonético na descodificação?",
+    help_a8: "Três estilos aceites: Alpha_Bravo//Charlie, com espaços (a b c//d) ou colado (abc//d). O separador // divide palavras; dígitos passam tal como estão.",
+    help_q9: "Funciona sem internet?",
+    help_a9: "Sim: mapa-múndi, criptografia, fonética e exportação funcionam offline. Só os tiles de detalhe do mapa precisam de rede — e as áreas já vistas ficam em cache.",
+    help_q10: "Como instalo no telemóvel?",
+    help_a10: "Android/Chrome: menu ⋮ → Instalar app.<br>iPhone/Safari: Partilhar → Adicionar à Tela de Início.<br>A instalação exige abrir o site por HTTPS (ex.: edirosky.github.io/scr-cipher-pwa).",
+    help_q11: "Onde fica guardada a palavra-chave?",
+    help_a11: "Só em memória, nesta sessão — nunca em disco. Ao fechar a página, a palavra volta a ser pedida. O botão ESQUECER apaga a chave imediatamente.",
+    help_q12: "Notas de segurança",
+    help_a12: "Guarda a lista de chaves em local seguro; usa cada linha uma vez e destrói-a depois. O código de 6 dígitos é conveniência, não proteção. Esta app não substitui equipamento criptográfico certificado.",
+    help_q13: "Para que serve o TESTAR CICLO?",
+    help_a13: "Codifica o formulário atual, descodifica o report e os campos, e confirma os dois CHK. Usa-o no início de cada sessão para validar chave, data e app antes de transmitir.",
     // DTG
     dtg_title: "Grupo Data-Hora (DTG)",
     enc_date_label: "Data (UTC)",
@@ -1415,6 +1469,35 @@ const i18n = {
     tab_encode: "▲ ENCODE",
     tab_decode: "▼ DECODE",
     tab_phon: "≋ PHONETIC",
+    tab_help: "? HELP",
+    help_title: "HELP · FREQUENTLY ASKED QUESTIONS",
+    help_intro: "Quick guide to SCR CIPHER. After first open, the app works without internet. The keyword is the only secret — everything else is procedure.",
+    help_q1: "How do I start?",
+    help_a1: "1) Enter today 6-digit code (from the key list).<br>2) In the window that opens, type the keyword of the day and confirm the UTC date.<br>3) If the code matches the keyword, the session key activates and the app opens.",
+    help_q2: "Where does the 6-digit code come from?",
+    help_a2: "It is derived from the keyword and the date (SHA-256). The list generator computes it; without the list there is no way to guess it. It confirms you typed the right keyword for the day.",
+    help_q3: "Does the keyword include hyphens?",
+    help_a3: "Hyphens, spaces and accents are not part of the key: TE-LA-RU-PU, te la ru pu and telarupu are the same word. Transmit and type the exact form from the list.",
+    help_q4: "Error: KEYWORD DOES NOT MATCH CODE",
+    help_a4: "The typed keyword does not match the entered code: a typo, a code from another day, or the wrong list line. Confirm with the key custodian before retrying.",
+    help_q5: "What is the KD field?",
+    help_a5: "The key date (YYYY-MM-DD) carried inside the report. It lets the decoder re-derive the correct key even when decoding the next day.",
+    help_q6: "What is CHK for?",
+    help_a6: "A checksum over the message body. It detects radio noise and dropouts: if CHK MISMATCH appears, request retransmission — 'SEND AGAIN <SER>'. Never decode a report with a bad CHK.",
+    help_q7: "Full report or individual fields?",
+    help_a7: "Report: paste the whole text and decode at once.<br>Fields: fill only the lines you received — useful when radio passed part of the message or you want to decode field by field.",
+    help_q8: "How do I write phonetics when decoding?",
+    help_a8: "Three accepted styles: Alpha_Bravo//Charlie, spaced (a b c//d) or run-together (abc//d). The // separator divides words; digits pass through as-is.",
+    help_q9: "Does it work offline?",
+    help_a9: "Yes: world map, cryptography, phonetics and export work offline. Only detailed map tiles need network — and areas already viewed stay cached.",
+    help_q10: "How do I install on my phone?",
+    help_a10: "Android/Chrome: menu ⋮ → Install app.<br>iPhone/Safari: Share → Add to Home Screen.<br>Installation requires opening the site over HTTPS (e.g.: edirosky.github.io/scr-cipher-pwa).",
+    help_q11: "Where is the keyword stored?",
+    help_a11: "In memory only, this session — never on disk. Closing the page asks for the keyword again. The FORGET button wipes the key immediately.",
+    help_q12: "Security notes",
+    help_a12: "Keep the key list in a safe place; use each line once and destroy it afterwards. The 6-digit code is convenience, not protection. This app does not replace certified crypto equipment.",
+    help_q13: "What does TEST CYCLE do?",
+    help_a13: "It encodes the current form, decodes the report and the fields, and verifies both CHKs. Run it at the start of each session to validate key, date and app before transmitting.",
     // DTG
     dtg_title: "Date-Time Group (DTG)",
     enc_date_label: "Date (UTC)",
