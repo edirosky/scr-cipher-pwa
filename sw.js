@@ -7,7 +7,7 @@
    - Tiles OSM: stale-while-revalidate com limite LRU
    ============================================================ */
 
-const VERSION = "v7";
+const VERSION = "v8";
 const SHELL_CACHE = `scr-cipher-shell-${VERSION}`;
 const TILE_CACHE = `scr-cipher-tiles-${VERSION}`;
 const MAX_TILE_ENTRIES = 600;
@@ -39,7 +39,13 @@ const SHELL_ASSETS = [
   "./images/marker-icon-2x.png",
   "./images/marker-shadow.png",
   "./images/layers.png",
-  "./images/layers-2x.png"
+  "./images/layers-2x.png",
+  "./navios/index.html",
+  "./navios/manifest.json",
+  "./navios/pwa-192x192.png",
+  "./navios/pwa-512x512.png",
+  "./navios/apple-touch-icon-180x180.png",
+  "./navios/favicon.ico"
 ];
 
 const TILE_HOSTS = [

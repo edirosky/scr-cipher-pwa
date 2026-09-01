@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fundo -->
+  <rect width="512" height="512" fill="#0b3d91" rx="96"/>
+
+  <!-- Onda estilizada (embarcação / mar) -->
+  <path d="M96 340 Q176 300 256 340 T416 340" stroke="#4fc3f7" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <path d="M96 380 Q176 340 256 380 T416 380" stroke="#4fc3f7" stroke-width="16" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Casco de barco simplificado -->
+  <path d="M160 220 L352 220 L336 280 L176 280 Z" fill="#ffffff"/>
+  <!-- Mastro -->
+  <line x1="256" y1="220" x2="256" y2="120" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+  <!-- Vela -->
+  <path d="M256 130 L256 210 L336 210 Z" fill="#4fc3f7"/>
+  <path d="M256 130 L256 210 L176 210 Z" fill="#29b6f6"/>
+  <!-- Bandeira no topo -->
+  <path d="M256 120 L300 110 L256 100 Z" fill="#ffc107"/>
+</svg>

@@ -888,6 +888,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
     .sep-section { border-top:1px solid var(--b); margin:20px 0 12px; padding-top:4px; }
     .tbtn.m.act { color:var(--pu); border-bottom-color:var(--pu); }
     .tbtn.h.act { color:var(--yw); border-bottom-color:var(--yw); }
+    .tbtn.n.act { color:var(--g); border-bottom-color:var(--g); }
+    #navios-frame { width:100%; height:calc(100vh - 170px); min-height:420px; border:1px solid var(--b); border-radius:6px; background:#fff; }
     .help-intro { font-size:12px; color:var(--mu); line-height:1.7; margin-bottom:14px; border-left:2px solid var(--b); padding-left:10px; }
     .faq { margin-bottom:14px; }
     .faq-q { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; color:var(--ac); text-transform:uppercase; margin-bottom:3px; }
@@ -1010,6 +1012,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <button class="tbtn d" data-action="switch-tab" data-tab="dec" data-i18n="tab_decode">▼ DECODE</button>
   <button class="tbtn m" data-action="switch-tab" data-tab="fon" data-i18n="tab_phon">≋ FONÉTICO</button>
   <button class="tbtn h" data-action="switch-tab" data-tab="help" data-i18n="tab_help">? AJUDA</button>
+  <button class="tbtn n" data-action="switch-tab" data-tab="navios" data-i18n="tab_navios">⛎ NAVIOS</button>
 </div>
 
 <div class="main">
@@ -1220,6 +1223,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="faq"><div class="faq-q" data-i18n="help_q12"></div><div class="faq-a" data-i18n="help_a12"></div></div>
     <div class="faq"><div class="faq-q" data-i18n="help_q13"></div><div class="faq-a" data-i18n="help_a13"></div></div>
   </div>
+
+  <!-- Aba: formulário online de navios abordados (sistema embarcacoes, sem cifra) -->
+  <div id="pane-navios" class="pane">
+    <div class="st" data-i18n="navios_title">FORMULÁRIO · NAVIOS ABORDADOS</div>
+    <div class="help-intro" data-i18n="navios_intro"></div>
+    <iframe id="navios-frame" data-src="navios/index.html" title="Formulário navios abordados"></iframe>
+  </div>
 </div>
 
 
@@ -1306,6 +1316,9 @@ const i18n = {
     tab_decode: "▼ DESCODIFICAR",
     tab_phon: "≋ FONÉTICO",
     tab_help: "? AJUDA",
+    tab_navios: "⛎ NAVIOS",
+    navios_title: "FORMULÁRIO · NAVIOS ABORDADOS",
+    navios_intro: "Registo online de embarcações abordadas/avistadas — sem cifra: os dados vão diretamente para a planilha COSMAR quando há internet, e ficam em fila local quando não há. Inicia sessão com o teu código de operador no formulário abaixo.",
     help_title: "AJUDA · PERGUNTAS FREQUENTES",
     help_intro: "Guia rápido do SCR CIPHER. Depois da primeira abertura, a app funciona sem internet. A palavra-chave é o único segredo — o resto é procedimento.",
     help_q1: "Como começo?",
@@ -1470,6 +1483,9 @@ const i18n = {
     tab_decode: "▼ DECODE",
     tab_phon: "≋ PHONETIC",
     tab_help: "? HELP",
+    tab_navios: "⛎ VESSELS",
+    navios_title: "FORM · BOARDED VESSELS",
+    navios_intro: "Online log of boarded/sighted vessels — no cipher: data goes straight to the COSMAR spreadsheet when online, and queues locally when offline. Sign in with your operator code in the form below.",
     help_title: "HELP · FREQUENTLY ASKED QUESTIONS",
     help_intro: "Quick guide to SCR CIPHER. After first open, the app works without internet. The keyword is the only secret — everything else is procedure.",
     help_q1: "How do I start?",
@@ -2737,7 +2753,7 @@ function clearEnc(){
   latHem='N';lonHem='W';document.getElementById('btn-N').className='hem-btn act';document.getElementById('btn-S').className='hem-btn s';document.getElementById('btn-W').className='hem-btn act';document.getElementById('btn-E').className='hem-btn';updatePosPreview();
 }
 function clearDec(){document.getElementById('d-in').value='';document.getElementById('dec-out').style.display='none';document.getElementById('key-mismatch-banner').classList.remove('vis');}
-function sw(tab,el){document.querySelectorAll('.pane').forEach(p=>p.classList.remove('act'));document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));document.getElementById('pane-'+tab).classList.add('act');el.classList.add('act');}
+function sw(tab,el){document.querySelectorAll('.pane').forEach(p=>p.classList.remove('act'));document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));document.getElementById('pane-'+tab).classList.add('act');el.classList.add('act');if(tab==='navios'){const f=document.getElementById('navios-frame');if(f&&!f.src)f.src=f.dataset.src;}}
 
 // ══════════════════════════════════════════════════════
 //  DECODE INPUT MODE (report / campos individuais)
