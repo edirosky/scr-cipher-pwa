@@ -7,7 +7,7 @@
    - Tiles OSM: stale-while-revalidate com limite LRU
    ============================================================ */
 
-const VERSION = "v13";
+const VERSION = "v14";
 const SHELL_CACHE = `scr-cipher-shell-${VERSION}`;
 const TILE_CACHE = `scr-cipher-tiles-${VERSION}`;
 const MAX_TILE_ENTRIES = 600;
@@ -115,7 +115,15 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          caches.open(SHELL_CACHE).then((c) => c.put("./index.html", response.clone()));
+          // só o shell (./ ou ./index.html) alimenta a cache de navegação —
+          // evita que /navios/index.html ou deep links sobrescrevam o shell
+          try {
+            const u = new URL(response.url || request.url);
+            const base = self.location.pathname.replace(/[^/]*$/, "");
+            if (u.pathname === base || u.pathname === base + "index.html") {
+              caches.open(SHELL_CACHE).then((c) => c.put("./index.html", response.clone()));
+            }
+          } catch (e) {}
           return response;
         })
         .catch(async () => {
