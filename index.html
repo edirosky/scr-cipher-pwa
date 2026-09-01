@@ -2569,9 +2569,10 @@ async function doEncode(){
   const lM=getLatMinDec();const oM=getLonMinDec();const oD=parseInt(document.getElementById('e-lond').value)||0;
   const crs=parseInt(document.getElementById('e-crs').value)||0;const spd=parseFloat(document.getElementById('e-spd').value)||0;
   const imo=document.getElementById('e-imo').value.trim();const mmsi=document.getElementById('e-mmsi').value.trim();
-  const flg=document.getElementById('e-flg').value;const typ=document.getElementById('e-typ').value;
-  const sns=document.getElementById('e-sns').value;const lpc=document.getElementById('e-lpc').value;
-  const npc=document.getElementById('e-npc').value;const add=document.getElementById('e-add').value;
+  const _ok=(id,v)=>{v=String(v||'').toUpperCase();return v&&((CLASS_LOOKUPS[id]||[]).some(e=>e.value===v))?v:'';};
+  const flg=_ok('e-flg',document.getElementById('e-flg').value);const typ=_ok('e-typ',document.getElementById('e-typ').value);
+  const sns=_ok('e-sns',document.getElementById('e-sns').value);const lpc=_ok('e-lpc',document.getElementById('e-lpc').value);
+  const npc=_ok('e-npc',document.getElementById('e-npc').value);const add=_ok('e-add',document.getElementById('e-add').value);
   const txt=document.getElementById('e-txt').value.trim();const day=dtg.day;
   const imoStr=encodeIMO_MMSI(imo,mmsi,KEY);
   const body=`KD:${dtg.dateStr}\nL1:${encodeDTG(dtg,KEY)}\nL2:${encodePos(parseInt(latD),lM,latHem,oD,oM,lonHem,KEY)}\nL3:${eDigs(pad(crs,3),10)}\nL4:${eDigs(parseFloat(spd).toFixed(1).replace('.','').padStart(3,'0'),13)}\nL5:${encodeTextField(nam,KEY)}\nL6:${flg?shiftCode(flg,day,true,KEY):'X'}\nL7:${typ?shiftCode(typ,day,true,KEY):'X'}\nL8:${sns?shiftCode(sns,day,true,KEY):'X'}\nL9:${imoStr}\nL10:${lpc?shiftCode(lpc,day,true,KEY):'X'}\nL11:${npc?shiftCode(npc,day,true,KEY):'X'}\nL12:${add?shiftCode(add,day,true,KEY):'X'}\nL13:${encodeTextField(txt,KEY)}`;
@@ -3482,12 +3483,12 @@ const EX_PLAIN = {
   namEN: 'Atlantic Mariner',
   txtEN: 'Suspicious vessel, no flag visible, 3 crew members on board',
   imo: '9123456', mmsi: '657123456',
-  flag: 'SN',  // Senegal
-  type: 'F0',  // Fishing / Pesca
-  sensor: 'B', // AIS
+  flag: 'SN',  // Senegal (ISO)
+  type: 'D',   // Navio de pesca — geral
+  sensor: 'A4',// AIS — transponder activo
   lpoc: '01',  // Dakar
   npoc: '02',  // Tema
-  infoCode: 'B' // Suspicious movement / Movimento suspeito
+  infoCode: 'C1' // Movimento suspeitoeito
 };
 
 function loadEncodeExample() {
