@@ -976,8 +976,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
 
     <div class="minfo">
-      🇵🇹 KD gravado no report — decoder re-deriva automaticamente. A passe fica guardada neste browser.<br>
-      <span style="color:var(--mu)">🇬🇧 KD embedded in report — decoder re-derives key. Password stored in this browser.</span>
+      🇵🇹 LK gravada no report — decoder re-deriva automaticamente. A passe fica guardada neste browser.<br>
+      <span style="color:var(--mu)">🇬🇧 LK embedded in report — decoder re-derives key. Password stored in this browser.</span>
     </div>
 
     <div class="mbtns">
@@ -1029,6 +1029,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
 
     <div class="st" data-i18n="pos_title">Posição</div>
+    <div class="fmt-tog">
+      <button class="dec-mode-btn" id="ef-GG" data-action="enc-fmt" data-fmt="GG">GG</button>
+      <button class="dec-mode-btn act" id="ef-GGMM" data-action="enc-fmt" data-fmt="GGMM">GGMM</button>
+      <button class="dec-mode-btn" id="ef-GGMMSS" data-action="enc-fmt" data-fmt="GGMMSS">GGMMSS</button>
+    </div>
+    <div id="enc-GG" style="display:none">
+      <div class="g2">
+        <div class="fld"><label>LAT °</label><div style="display:flex;gap:6px"><input type="number" id="e-gg-lat" step="0.0001" min="0" max="90" oninput="encPosChanged()" style="flex:1"><select id="e-gg-lath" onchange="encPosChanged()" style="width:64px"><option>N</option><option>S</option></select></div></div>
+        <div class="fld"><label>LON °</label><div style="display:flex;gap:6px"><input type="number" id="e-gg-lon" step="0.0001" min="0" max="180" oninput="encPosChanged()" style="flex:1"><select id="e-gg-lonh" onchange="encPosChanged()" style="width:64px"><option>E</option><option>W</option></select></div></div>
+      </div>
+    </div>
+    <div id="enc-GGMM">
     <div style="background:var(--panel);border:1px solid var(--b);border-radius:var(--rad);padding:10px;margin-bottom:10px">
       <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mu);letter-spacing:2px;margin-bottom:8px" data-i18n="lat_title">LATITUDE</div>
       <div class="g4">
@@ -1048,6 +1060,21 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <div class="fld"><label>W / E</label><div class="hem-tog"><button class="hem-btn act" id="btn-W" data-action="set-hem" data-axis="lon" data-hem="W">W</button><button class="hem-btn" id="btn-E" data-action="set-hem" data-axis="lon" data-hem="E">E</button></div></div>
       </div>
       <div class="vhint mu" id="lon-preview" style="margin-top:6px;font-size:10px">—</div>
+    </div>
+    </div>
+    <div id="enc-GGMMSS" style="display:none">
+      <div class="g4">
+        <div class="fld"><label>LAT °</label><input type="number" id="e-ss-latd" min="0" max="90" oninput="encPosChanged()"></div>
+        <div class="fld"><label>MIN '</label><input type="number" id="e-ss-latm" min="0" max="59" oninput="encPosChanged()"></div>
+        <div class="fld"><label>SEC</label><input type="number" id="e-ss-lats" step="0.1" min="0" max="59.9" oninput="encPosChanged()"></div>
+        <div class="fld"><label>N/S</label><select id="e-ss-lath" onchange="encPosChanged()"><option>N</option><option>S</option></select></div>
+      </div>
+      <div class="g4" style="margin-top:8px">
+        <div class="fld"><label>LON °</label><input type="number" id="e-ss-lond" min="0" max="180" oninput="encPosChanged()"></div>
+        <div class="fld"><label>MIN '</label><input type="number" id="e-ss-lonm" min="0" max="59" oninput="encPosChanged()"></div>
+        <div class="fld"><label>SEC</label><input type="number" id="e-ss-lons" step="0.1" min="0" max="59.9" oninput="encPosChanged()"></div>
+        <div class="fld"><label>E/W</label><select id="e-ss-lonh" onchange="encPosChanged()"><option>E</option><option>W</option></select></div>
+      </div>
     </div>
 
     <div class="pos-map-card">
@@ -1125,9 +1152,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div id="dec-fields-hint-div" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mu);margin-bottom:12px;line-height:1.6;border-left:2px solid var(--b);padding-left:8px" data-i18n="dec_fields_hint">Preencha os campos com os valores codificados recebidos. Deixe em branco os que não tiver. O sistema detecta automaticamente se o campo é código simples ou string fonética.</div>
 
       <div class="g3" style="margin-bottom:10px">
-        <div class="fld"><label data-i18n="dec_fields_ser">SER (nº série)</label><input type="text" id="f-ser" placeholder="20260423-001"></div>
-        <div class="fld"><label data-i18n="dec_fields_chk">CHK (checksum)</label><input type="text" id="f-chk" placeholder="A1B2" maxlength="4" style="text-transform:uppercase"></div>
-        <div class="fld"><label id="lbl-f-kd" data-i18n="dec_fields_kd">KD (data da chave) AAAA-MM-DD</label><input type="text" id="f-kd" placeholder="AAAA-MM-DD" maxlength="10" autocomplete="off" style="font-family:'Share Tech Mono',monospace" oninput="this.value=this.value.replace(/[^0-9-]/g,'')"></div>
+        <div class="fld"><label data-i18n="dec_fields_ser">LS (linha série)</label><input type="text" id="f-ser" placeholder="20260423-001"></div>
+        <div class="fld"><label data-i18n="dec_fields_chk">LC (checksum)</label><input type="text" id="f-chk" placeholder="A1B2" maxlength="4" style="text-transform:uppercase"></div>
+        <div class="fld"><label id="lbl-f-kd" data-i18n="dec_fields_kd">LK (data da chave) AAAA-MM-DD</label><input type="text" id="f-kd" placeholder="AAAA-MM-DD" maxlength="10" autocomplete="off" style="font-family:'Share Tech Mono',monospace" oninput="this.value=this.value.replace(/[^0-9-]/g,'')"></div>
       </div>
 
       <div class="g2" style="margin-bottom:10px">
@@ -1192,6 +1219,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
     <div class="pos-map-card">
       <div class="st" style="margin-top:0" data-i18n="dec_map_title">POSIÇÃO DESCODIFICADA</div>
+      <div class="fmt-tog">
+        <button class="dec-mode-btn" id="df-GG" data-action="dec-fmt" data-fmt="GG">GG</button>
+        <button class="dec-mode-btn act" id="df-GGMM" data-action="dec-fmt" data-fmt="GGMM">GGMM</button>
+        <button class="dec-mode-btn" id="df-GGMMSS" data-action="dec-fmt" data-fmt="GGMMSS">GGMMSS</button>
+      </div>
+      <div class="vhint mu" id="dec-pos-fmt" style="margin-bottom:8px">—</div>
       <div id="dec-map" class="rps-map"></div>
     </div>
   </div>
@@ -1298,7 +1331,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
     <div class="sep-section"></div>
     <div class="st" data-i18n="rps_dec_title">DESCODIFICAR REPORTE</div>
-    <div class="fld"><textarea id="rps-in" rows="6" placeholder="RPS:..."></textarea></div>
+    <div class="fld"><textarea id="rps-in" rows="6" placeholder="LS:..."></textarea></div>
     <div class="prow"><button class="btn bd" data-action="rps-decode">▼ DESCODIFICAR</button></div>
     <div id="rps-dec-meta" class="meta-row"></div>
     <div id="rps-dec-out" style="display:none"><div class="ob"><span class="ol" data-i18n="decode_result_title">REPORTE DESCODIFICADO</span><table class="dt" id="rps-tbl"></table></div></div>
@@ -1440,10 +1473,10 @@ const i18n = {
     help_a3: "Hífens, espaços e acentos não fazem parte da chave: TE-LA-RU-PU, te la ru pu e telarupu são a mesma palavra. Transmite e digita sempre a forma da lista.",
     help_q4: "Erro: PALAVRA-CHAVE NÃO CORRESPONDE AO CÓDIGO",
     help_a4: "A palavra escrita não bate com o código introduzido: gralha na palavra, código de outro dia, ou linha errada da lista. Confirma com o custódio das chaves antes de repetir.",
-    help_q5: "O que é o campo KD?",
+    help_q5: "O que é o campo LK?",
     help_a5: "É a data da chave (AAAA-MM-DD) que viaja no report. Permite ao descodificador re-derivar a chave certa mesmo quando descodifica no dia seguinte.",
-    help_q6: "O que é o CHK e para que serve?",
-    help_a6: "Checksum do corpo da mensagem. Deteta ruído e quebras de rádio: se aparecer CHK MISMATCH, pede retransmissão — «SEND AGAIN <SER>». Nunca descodifiques um report com CHK errado.",
+    help_q6: "O que é o LC e para que serve?",
+    help_a6: "Checksum do corpo da mensagem. Deteta ruído e quebras de rádio: se aparecer LC MISMATCH, pede retransmissão — «SEND AGAIN <LS>». Nunca descodifiques um report com LC errado.",
     help_q7: "Report completo ou campos individuais?",
     help_a7: "Report: cola o texto todo e descodifica de uma vez.<br>Campos: preenche apenas as linhas que recebeste — útil quando o rádio passou parte da mensagem ou queres descodificar campo a campo.",
     help_q8: "Como escrevo o fonético na descodificação?",
@@ -1457,7 +1490,7 @@ const i18n = {
     help_q12: "Notas de segurança",
     help_a12: "Guarda a lista de chaves em local seguro; usa cada linha uma vez e destrói-a depois. O código de 6 dígitos é conveniência, não proteção. Esta app não substitui equipamento criptográfico certificado.",
     help_q13: "Para que serve o TESTAR CICLO?",
-    help_a13: "Codifica o formulário atual, descodifica o report e os campos, e confirma os dois CHK. Usa-o no início de cada sessão para validar chave, data e app antes de transmitir.",
+    help_a13: "Codifica o formulário atual, descodifica o report e os campos, e confirma os dois LC. Usa-o no início de cada sessão para validar chave, data e app antes de transmitir.",
     // DTG
     dtg_title: "Grupo Data-Hora (DTG)",
     enc_date_label: "Data (UTC)",
@@ -1533,9 +1566,9 @@ const i18n = {
     mmsi_valid: "✓ MMSI válido",
     mmsi_invalid: "Requer 9 dígitos ",
     // Campos individuais
-    dec_fields_ser: "SER (nº série)",
-    dec_fields_chk: "CHK (checksum)",
-    dec_fields_kd: "KD (data da chave) AAAA-MM-DD",
+    dec_fields_ser: "LS (nº série)",
+    dec_fields_chk: "LC (checksum)",
+    dec_fields_kd: "LK (data da chave) AAAA-MM-DD",
     dec_fields_l1: "L1 · DTG codificado",
     dec_fields_l2: "L2 · Posição codificada",
     dec_fields_l3: "L3 · Rumo codificado (3 dígitos)",
@@ -1552,7 +1585,7 @@ const i18n = {
     dec_fields_btn: "▼ DESCODIFICAR CAMPOS",
     dec_fields_clear: "✕ LIMPAR CAMPOS",
     dec_fields_hint: "Preencha os campos com os valores codificados recebidos. Deixe em branco os que não tiver. O sistema detecta automaticamente se o campo contém um código simples ou uma string fonética.",
-    man_chk_note: "Modo campos — CHK não verificado",
+    man_chk_note: "Modo campos — LC não verificado",
   },
   pt_en: {
     // Ecrã de bloqueio / Lock screen
@@ -1619,10 +1652,10 @@ const i18n = {
     help_a3: "Hyphens, spaces and accents are not part of the key: TE-LA-RU-PU, te la ru pu and telarupu are the same word. Transmit and type the exact form from the list.",
     help_q4: "Error: KEYWORD DOES NOT MATCH CODE",
     help_a4: "The typed keyword does not match the entered code: a typo, a code from another day, or the wrong list line. Confirm with the key custodian before retrying.",
-    help_q5: "What is the KD field?",
+    help_q5: "What is the LK field?",
     help_a5: "The key date (YYYY-MM-DD) carried inside the report. It lets the decoder re-derive the correct key even when decoding the next day.",
-    help_q6: "What is CHK for?",
-    help_a6: "A checksum over the message body. It detects radio noise and dropouts: if CHK MISMATCH appears, request retransmission — 'SEND AGAIN <SER>'. Never decode a report with a bad CHK.",
+    help_q6: "What is LC for?",
+    help_a6: "A checksum over the message body. It detects radio noise and dropouts: if LC MISMATCH appears, request retransmission — 'SEND AGAIN <LS>'. Never decode a report with a bad LC.",
     help_q7: "Full report or individual fields?",
     help_a7: "Report: paste the whole text and decode at once.<br>Fields: fill only the lines you received — useful when radio passed part of the message or you want to decode field by field.",
     help_q8: "How do I write phonetics when decoding?",
@@ -1636,7 +1669,7 @@ const i18n = {
     help_q12: "Security notes",
     help_a12: "Keep the key list in a safe place; use each line once and destroy it afterwards. The 6-digit code is convenience, not protection. This app does not replace certified crypto equipment.",
     help_q13: "What does TEST CYCLE do?",
-    help_a13: "It encodes the current form, decodes the report and the fields, and verifies both CHKs. Run it at the start of each session to validate key, date and app before transmitting.",
+    help_a13: "It encodes the current form, decodes the report and the fields, and verifies both LCs. Run it at the start of each session to validate key, date and app before transmitting.",
     // DTG
     dtg_title: "Date-Time Group (DTG)",
     enc_date_label: "Date (UTC)",
@@ -1712,9 +1745,9 @@ const i18n = {
     mmsi_valid: "✓ MMSI valid",
     mmsi_invalid: "Requires 9 digits ",
     // Individual fields
-    dec_fields_ser: "SER (serial number)",
-    dec_fields_chk: "CHK (checksum)",
-    dec_fields_kd: "KD (key date) YYYY-MM-DD",
+    dec_fields_ser: "LS (serial number)",
+    dec_fields_chk: "LC (checksum)",
+    dec_fields_kd: "LK (key date) YYYY-MM-DD",
     dec_fields_l1: "L1 · Encoded DTG",
     dec_fields_l2: "L2 · Encoded position",
     dec_fields_l3: "L3 · Encoded course (3 digits)",
@@ -1731,7 +1764,7 @@ const i18n = {
     dec_fields_btn: "▼ DECODE FIELDS",
     dec_fields_clear: "✕ CLEAR FIELDS",
     dec_fields_hint: "Fill in each field with the received encoded values. Leave unknown fields blank. The system automatically detects whether the field contains a simple code or a phonetic string.",
-    man_chk_note: "Fields mode — CHK not verified",
+    man_chk_note: "Fields mode — LC not verified",
   }
 };
 
@@ -2576,9 +2609,9 @@ async function doEncode(){
   const npc=_ok('e-npc',document.getElementById('e-npc').value);const add=_ok('e-add',document.getElementById('e-add').value);
   const txt=document.getElementById('e-txt').value.trim();const day=dtg.day;
   const imoStr=encodeIMO_MMSI(imo,mmsi,KEY);
-  const body=`KD:${dtg.dateStr}\nL1:${encodeDTG(dtg,KEY)}\nL2:${encodePos(parseInt(latD),lM,latHem,oD,oM,lonHem,KEY)}\nL3:${eDigs(pad(crs,3),10)}\nL4:${eDigs(parseFloat(spd).toFixed(1).replace('.','').padStart(3,'0'),13)}\nL5:${encodeTextField(nam,KEY)}\nL6:${flg?shiftCode(flg,day,true,KEY):'X'}\nL7:${typ?shiftCode(typ,day,true,KEY):'X'}\nL8:${sns?shiftCode(sns,day,true,KEY):'X'}\nL9:${imoStr}\nL10:${lpc?shiftCode(lpc,day,true,KEY):'X'}\nL11:${npc?shiftCode(npc,day,true,KEY):'X'}\nL12:${add?shiftCode(add,day,true,KEY):'X'}\nL13:${encodeTextField(txt,KEY)}`;
+  const body=`LK:${dtg.dateStr}\nL1:${encodeDTG(dtg,KEY)}\nL2:${encodePos(parseInt(latD),lM,latHem,oD,oM,lonHem,KEY)}\nL3:${eDigs(pad(crs,3),10)}\nL4:${eDigs(parseFloat(spd).toFixed(1).replace('.','').padStart(3,'0'),13)}\nL5:${encodeTextField(nam,KEY)}\nL6:${flg?shiftCode(flg,day,true,KEY):'X'}\nL7:${typ?shiftCode(typ,day,true,KEY):'X'}\nL8:${sns?shiftCode(sns,day,true,KEY):'X'}\nL9:${imoStr}\nL10:${lpc?shiftCode(lpc,day,true,KEY):'X'}\nL11:${npc?shiftCode(npc,day,true,KEY):'X'}\nL12:${add?shiftCode(add,day,true,KEY):'X'}\nL13:${encodeTextField(txt,KEY)}`;
   const ser=serialNo();const chk=checksum(body);
-  document.getElementById('enc-pre').textContent=`SER:${ser}\nCHK:${chk}\n${body}`;
+  document.getElementById('enc-pre').textContent=`LS:${ser}\nLC:${chk}\n${body}`;
   renderDecodeMeta('enc-meta', [{cls:'ser',text:`SER ${ser}`},{cls:'chk',text:`CHK ${chk}`},{cls:'kd',text:`KD ${dtg.dateStr}`}]);
   const o=document.getElementById('enc-out');o.style.display='block';o.querySelector('pre').classList.remove('flash');void o.querySelector('pre').offsetWidth;o.querySelector('pre').classList.add('flash');
 }
@@ -2654,15 +2687,16 @@ function renderDecodeMeta(targetId, items) {
 function buildLinesFromFields() {
   const read = id => (document.getElementById(id)?.value || '').trim();
   const lines = {};
+  const LSK={ser:'LS',chk:'LC',kd:'LK'};
   ['ser','chk','kd','l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12','l13'].forEach(k=>{
     const v=read('f-'+k);
-    if(v) lines[k.toUpperCase()]=v;
+    if(v) lines[LSK[k]||k.toUpperCase()]=v;
   });
   return lines;
 }
 
 function bodyFromLines(lines) {
-  return ['KD','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13']
+  return ['LK','L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13']
     .filter(k=>lines[k])
     .map(k=>`${k}:${lines[k]}`)
     .join('\n');
@@ -2672,21 +2706,21 @@ async function doDecode(){
   if(!KEY){alert(iLang()==='pt'?'Ative a chave de sessão primeiro.':'Activate the session key first.');return;}
   const raw=document.getElementById('d-in').value.trim();if(!raw)return;
   const lines={};raw.split('\n').forEach(l=>{const m=l.match(/^([A-Z0-9]+)\s*:\s*(.+)/i);if(m)lines[m[1].toUpperCase()]=m[2].trim();});
-  const g=k=>lines[k]||'';const kd=g('KD');let decKey=KEY;let keyAutoMsg='';
-  if(kd){const sp=loadStoredPass();if(sp){decKey=await deriveKey(sp,kd);keyAutoMsg=`⟳ KD ${kd}`;}else{alert(iLang()==='pt'?'Sem palavra-passe nesta sessão.':'No session password.');return;}}
-  const storedChk=g('CHK');const bodyLines=raw.split('\n').filter(l=>!/^(SER|CHK)\s*:/i.test(l)).join('\n');
+  const g=k=>lines[k]||'';const kd=g('LK');let decKey=KEY;let keyAutoMsg='';
+  if(kd){const sp=loadStoredPass();if(sp){decKey=await deriveKey(sp,kd);keyAutoMsg=`⟳ LK ${kd}`;}else{alert(iLang()==='pt'?'Sem palavra-passe nesta sessão.':'No session password.');return;}}
+  const storedChk=g('LC');const bodyLines=raw.split('\n').filter(l=>!/^(LS|LC)\s*:/i.test(l)).join('\n');
   const chkOk=!storedChk||storedChk===checksum(bodyLines.trim());
   const decoded=decodeContactRows(lines,decKey);
   document.getElementById('key-mismatch-banner').classList.toggle('vis',decoded.mismatch);
   renderRows('dec-tbl', decoded.rows);
   renderDecodeMeta('dec-meta', [
-    ...(g('SER')?[{cls:'ser',text:`SER ${g('SER')}`}]:[]),
-    {cls:chkOk?'chk':'err',text:chkOk?'✓ CHK OK':'⚠ CHK MISMATCH'},
-    ...(kd?[{cls:'kd',text:`KD ${kd}`}]:[]),
+    ...(g('LS')?[{cls:'ser',text:`LS ${g('LS')}`}]:[]),
+    {cls:chkOk?'chk':'err',text:chkOk?'✓ LC OK':'⚠ LC MISMATCH'},
+    ...(kd?[{cls:'kd',text:`LK ${kd}`}]:[]),
     ...(keyAutoMsg?[{cls:'kwarn',text:keyAutoMsg}]:[])
   ]);
   const o=document.getElementById('dec-out');o.style.display='block';document.getElementById('dec-tbl').classList.remove('flash');void document.getElementById('dec-tbl').offsetWidth;document.getElementById('dec-tbl').classList.add('flash');
-  try{const pv=document.querySelector('#dec-tbl tr:nth-child(2) td:last-child');const pp=pv?parsePosDM(pv.textContent):null;if(pp)decShowPos(pp);}catch(e){}
+  try{const pv=document.querySelector('#dec-tbl tr:nth-child(2) td:last-child');const pp=pv?parsePosDM(pv.textContent):null;if(pp){decLastPos=pp;renderDecPos();decShowPos(pp);}}catch(e){}
 }
 
 // ══════════════════════════════════════════════════════
@@ -2695,7 +2729,7 @@ async function doDecode(){
 async function doDecodeFields(){
   if(!KEY){alert(iLang()==='pt'?'Ative a chave de sessão primeiro.':'Activate the session key first.');return;}
   const lines = buildLinesFromFields();
-  const kd = lines.KD || '';
+  const kd = lines.LK || '';
   let decKey = KEY;
   if (kd) {
     const sp = loadStoredPass();
@@ -2707,11 +2741,11 @@ async function doDecodeFields(){
   renderRows('fields-tbl', decoded.rows);
 
   const body = bodyFromLines(lines);
-  const chkOk = !lines.CHK || (body && lines.CHK.toUpperCase() === checksum(body));
+  const chkOk = !lines.LC || (body && lines.LC.toUpperCase() === checksum(body));
   renderDecodeMeta('fields-meta', [
-    ...(lines.SER?[{cls:'ser',text:`SER ${lines.SER}`}]:[]),
-    ...(lines.CHK?[{cls:chkOk?'chk':'err',text:chkOk?'✓ CHK OK':'⚠ CHK MISMATCH'}]:[{cls:'kwarn',text:t('man_chk_note')}]),
-    ...(kd?[{cls:'kd',text:`KD ${kd}`}]:[])
+    ...(lines.LS?[{cls:'ser',text:`LS ${lines.LS}`}]:[]),
+    ...(lines.LC?[{cls:chkOk?'chk':'err',text:chkOk?'✓ LC OK':'⚠ LC MISMATCH'}]:[{cls:'kwarn',text:t('man_chk_note')}]),
+    ...(kd?[{cls:'kd',text:`LK ${kd}`}]:[])
   ]);
 
   const o = document.getElementById('fields-out');
@@ -2719,7 +2753,7 @@ async function doDecodeFields(){
   document.getElementById('fields-tbl').classList.remove('flash');
   void document.getElementById('fields-tbl').offsetWidth;
   document.getElementById('fields-tbl').classList.add('flash');
-  try{const pv=document.querySelector('#fields-tbl tr:nth-child(2) td:last-child');const pp=pv?parsePosDM(pv.textContent):null;if(pp)decShowPos(pp);}catch(e){}
+  try{const pv=document.querySelector('#fields-tbl tr:nth-child(2) td:last-child');const pp=pv?parsePosDM(pv.textContent):null;if(pp){decLastPos=pp;renderDecPos();decShowPos(pp);}}catch(e){}
 }
 
 function clearFields() {
@@ -2742,13 +2776,13 @@ async function selfTest(){
   sw('dec',document.querySelector('.tbtn.d'));
   setDecInputMode('report');
   await doDecode();
-  const okReport=document.getElementById('dec-meta').textContent.includes('CHK OK');
+  const okReport=document.getElementById('dec-meta').textContent.includes('LC OK');
   clearFields();
-  const FM={SER:'f-ser',CHK:'f-chk',KD:'f-kd',L1:'f-l1',L2:'f-l2',L3:'f-l3',L4:'f-l4',L5:'f-l5',L6:'f-l6',L7:'f-l7',L8:'f-l8',L9:'f-l9',L10:'f-l10',L11:'f-l11',L12:'f-l12',L13:'f-l13'};
+  const FM={LS:'f-ser',LC:'f-chk',LK:'f-kd',L1:'f-l1',L2:'f-l2',L3:'f-l3',L4:'f-l4',L5:'f-l5',L6:'f-l6',L7:'f-l7',L8:'f-l8',L9:'f-l9',L10:'f-l10',L11:'f-l11',L12:'f-l12',L13:'f-l13'};
   report.split(NL).forEach(line=>{const i=line.indexOf(':');if(i<0)return;const el=document.getElementById(FM[line.slice(0,i).trim().toUpperCase()]);if(el)el.value=line.slice(i+1).trim();});
   setDecInputMode('fields');
   await doDecodeFields();
-  const okFields=document.getElementById('fields-meta').textContent.includes('CHK OK');
+  const okFields=document.getElementById('fields-meta').textContent.includes('LC OK');
   const btn=document.querySelector('[data-action="self-test"]');
   flashButton(btn,(okReport&&okFields)?(iLang()==='pt'?'✓ CICLO OK: REPORT + CAMPOS':'✓ CYCLE OK: REPORT + FIELDS'):(iLang()==='pt'?'⚠ FALHOU: '+(okReport?'CAMPOS':'REPORT'):'⚠ FAILED: '+(okReport?'FIELDS':'REPORT')));
 }
@@ -2772,12 +2806,13 @@ function rpsSetTipo(t){
   if(!rpsDirty)rpsLoadExample();
 }
 function rpsSetFmt(f){
+  const cur=rpsGetPos();
   rpsFmt=f;
   ['GG','GGMM','GGMMSS'].forEach(x=>{
     document.getElementById('rf-'+x).className='dec-mode-btn'+(x===f?' act':'');
     document.getElementById('rps-'+x).style.display=(x===f)?'':'none';
   });
-  rpsPosChanged();
+  if(cur)rpsSetPos(cur.lat,cur.lon);else rpsPosChanged();
 }
 function rpsNum(id){return parseFloat(document.getElementById(id).value);}
 function rpsGetPos(){
@@ -2848,46 +2883,46 @@ function rpsEncode(){
   const latD=Math.floor(Math.abs(p.lat)),latM=(Math.abs(p.lat)-latD)*60,lonD=Math.floor(Math.abs(p.lon)),lonM=(Math.abs(p.lon)-lonD)*60;
   const crs=parseInt(document.getElementById('rps-crs').value)||0;
   const spd=parseFloat(document.getElementById('rps-spd').value)||0;
-  const body=`KD:${dateStr}\nR1:${encodeDTG(dtg,KEY)}\nR2:${encodePos(latD,latM,p.lat>=0?'N':'S',lonD,lonM,p.lon>=0?'E':'W',KEY)}\nR3:${eDigs(pad(crs,3),10)}\nR4:${eDigs(spd.toFixed(1).replace('.','').padStart(4,'0'),13)}\nR5:${shiftCode(rpsTipo,day,true,KEY)}\nR6:${shiftCode(document.getElementById('rps-sta').value,day,true,KEY)}\nR7:${encodeTextField(document.getElementById('rps-nam').value.trim(),KEY)}\nR8:${encodeTextField(document.getElementById('rps-id').value.trim(),KEY)}\nR9:${encodeTextField(document.getElementById('rps-dest').value.trim(),KEY)}\nR10:${encodeTextField(document.getElementById('rps-txt').value.trim(),KEY)}`;
+  const body=`LK:${dateStr}\nL1:${encodeDTG(dtg,KEY)}\nL2:${encodePos(latD,latM,p.lat>=0?'N':'S',lonD,lonM,p.lon>=0?'E':'W',KEY)}\nL3:${eDigs(pad(crs,3),10)}\nL4:${eDigs(spd.toFixed(1).replace('.','').padStart(4,'0'),13)}\nL5:${shiftCode(rpsTipo,day,true,KEY)}\nL6:${shiftCode(document.getElementById('rps-sta').value,day,true,KEY)}\nL7:${encodeTextField(document.getElementById('rps-nam').value.trim(),KEY)}\nL8:${encodeTextField(document.getElementById('rps-id').value.trim(),KEY)}\nL9:${encodeTextField(document.getElementById('rps-dest').value.trim(),KEY)}\nL10:${encodeTextField(document.getElementById('rps-txt').value.trim(),KEY)}`;
   const ser=serialNo();const chk=checksum(body);
-  document.getElementById('rps-pre').textContent=`RPS:${ser}\nCHK:${chk}\n${body}`;
+  document.getElementById('rps-pre').textContent=`LS:${ser}\nLC:${chk}\n${body}`;
   document.getElementById('rps-out').style.display='block';
   rpsShowPos(p);
 }
 async function rpsDecode(){
   if(!KEY){alert(iLang()==='pt'?'Ative a chave de sessão.':'Activate session key.');return;}
   const raw=document.getElementById('rps-in').value.trim();
-  if(!raw){alert(iLang()==='pt'?'Cole um reporte RPS.':'Paste an RPS report.');return;}
+  if(!raw){alert(iLang()==='pt'?'Cole um reporte LS.':'Paste an LS report.');return;}
   const L={};raw.split(String.fromCharCode(10)).forEach(l=>{const i=l.indexOf(':');if(i>0)L[l.slice(0,i).trim().toUpperCase()]=l.slice(i+1).trim();});
-  const kd=L.KD||'';let decKey=KEY;
+  const kd=L.LK||'';let decKey=KEY;
   if(kd){const sp=loadStoredPass();if(sp)decKey=await deriveKey(sp,kd);}
-  const dtgR=decodeDTG(L.R1||'',decKey);const day=dtgR.day;
-  const posStr=L.R2?decodePos(L.R2,decKey):'—';
+  const dtgR=decodeDTG(L.L1||'',decKey);const day=dtgR.day;
+  const posStr=L.L2?decodePos(L.L2,decKey):'—';
   const p=parsePosDM(posStr);
-  const crs=L.R3?dDigs(L.R3,10,decKey):'—';
-  const spdRaw=L.R4?dDigs(L.R4,13,decKey):'';
+  const crs=L.L3?dDigs(L.L3,10,decKey):'—';
+  const spdRaw=L.L4?dDigs(L.L4,13,decKey):'';
   const spd=spdRaw?((parseInt(spdRaw)||0)/10).toFixed(1):'—';
-  const tipo=L.R5?shiftCode(L.R5,day,false,decKey):'—';
-  const sta=L.R6?shiftCode(L.R6,day,false,decKey):'—';
+  const tipo=L.L5?shiftCode(L.L5,day,false,decKey):'—';
+  const sta=L.L6?shiftCode(L.L6,day,false,decKey):'—';
   const staLabel=(NAVSTAT[tipo]||NAVSTAT.N).find(x=>x[0]===sta);
-  const nam=L.R7&&L.R7!=='X'?decodeTextField(L.R7,decKey):'—';
-  const idn=L.R8&&L.R8!=='X'?decodeTextField(L.R8,decKey):'—';
-  const dest=L.R9&&L.R9!=='X'?decodeTextField(L.R9,decKey):'—';
-  const obs=L.R10&&L.R10!=='X'?decodeTextField(L.R10,decKey):'—';
-  const body=raw.split(String.fromCharCode(10)).filter(l=>!/^(RPS|CHK)\s*:/i.test(l)).join(String.fromCharCode(10));
+  const nam=L.L7&&L.L7!=='X'?decodeTextField(L.L7,decKey):'—';
+  const idn=L.L8&&L.L8!=='X'?decodeTextField(L.L8,decKey):'—';
+  const dest=L.L9&&L.L9!=='X'?decodeTextField(L.L9,decKey):'—';
+  const obs=L.L10&&L.L10!=='X'?decodeTextField(L.L10,decKey):'—';
+  const body=raw.split(String.fromCharCode(10)).filter(l=>!/^(LS|LC)\s*:/i.test(l)).join(String.fromCharCode(10));
   const chkOk=!L.CHK||checksum(body)===L.CHK.toUpperCase();
   renderDecodeMeta('rps-dec-meta',[
-    ...(L.RPS?[{cls:'ser',text:`RPS ${L.RPS}`}]:[]),
-    {cls:chkOk?'chk':'err',text:chkOk?'✓ CHK OK':'⚠ CHK MISMATCH'},
-    ...(kd?[{cls:'kd',text:`KD ${kd}`}]:[])
+    ...(L.LS?[{cls:'ser',text:`LS ${L.LS}`}]:[]),
+    {cls:chkOk?'chk':'err',text:chkOk?'✓ LC OK':'⚠ LC MISMATCH'},
+    ...(kd?[{cls:'kd',text:`LK ${kd}`}]:[])
   ]);
   const lb=iLang()==='pt'
     ?{dtg:'DTG',pos:'Posição',crs:'Rumo',spd:'Velocidade',tipo:'Tipo',sta:'Estado',nam:'Nome',idn:'Identificação',dest:'Destino',obs:'OBS'}
     :{dtg:'DTG',pos:'Position',crs:'Course',spd:'Speed',tipo:'Type',sta:'Status',nam:'Name',idn:'ID',dest:'Destination',obs:'OBS'};
   renderRows('rps-tbl',[
-    [lb.dtg,'R1',dtgR.plain],[lb.pos,'R2',posStr],[lb.crs,'R3',crs==='—'?'—':crs+'°T'],[lb.spd,'R4',spd==='—'?'—':spd+' kt'],
-    [lb.tipo,'R5',tipo==='N'?(iLang()==='pt'?'NAVIO':'SHIP'):tipo==='A'?(iLang()==='pt'?'AERONAVE':'AIRCRAFT'):tipo],
-    [lb.sta,'R6',sta+(staLabel?' · '+staLabel[1]:'')],[lb.nam,'R7',nam],[lb.idn,'R8',idn],[lb.dest,'R9',dest],[lb.obs,'R10',obs]
+    [lb.dtg,'L1',dtgR.plain],[lb.pos,'L2',posStr],[lb.crs,'L3',crs==='—'?'—':crs+'°T'],[lb.spd,'L4',spd==='—'?'—':spd+' kt'],
+    [lb.tipo,'L5',tipo==='N'?(iLang()==='pt'?'NAVIO':'SHIP'):tipo==='A'?(iLang()==='pt'?'AERONAVE':'AIRCRAFT'):tipo],
+    [lb.sta,'L6',sta+(staLabel?' · '+staLabel[1]:'')],[lb.nam,'L7',nam],[lb.idn,'L8',idn],[lb.dest,'L9',dest],[lb.obs,'L10',obs]
   ]);
   document.getElementById('rps-dec-out').style.display='block';
   if(p){rpsSetPos(p.lat,p.lon);rpsShowPos(p);}
@@ -2917,6 +2952,78 @@ function rpsLoadExample(){
   document.getElementById('rps-sta').value=ex.sta;
   rpsSetVal('rps-nam',ex.nam);rpsSetVal('rps-id',ex.id);rpsSetVal('rps-dest',ex.dest);rpsSetVal('rps-txt',ex.obs);
   rpsDirty=false;
+}
+let encFmt='GGMM';
+function encGetDec(){
+  const num=id=>parseFloat(document.getElementById(id).value)||0;
+  const lat=(num('e-latd')+(num('e-latmi')+num('e-latmd')/1000)/60)*(latHem==='S'?-1:1);
+  const lon=(num('e-lond')+(num('e-lonmi')+num('e-lonmd')/1000)/60)*(lonHem==='W'?-1:1);
+  return {lat,lon};
+}
+function encSetV(id,v){const el=document.getElementById(id);if(el)el.value=v;}
+function encFillViews(lat,lon){
+  encSetV('e-gg-lat',Math.abs(lat).toFixed(4));document.getElementById('e-gg-lath').value=lat>=0?'N':'S';
+  encSetV('e-gg-lon',Math.abs(lon).toFixed(4));document.getElementById('e-gg-lonh').value=lon>=0?'E':'W';
+  const la=Math.abs(lat),lo=Math.abs(lon);
+  const lD=Math.floor(la),lM=(la-lD)*60,oD=Math.floor(lo),oM=(lo-oD)*60;
+  const lMi=Math.floor(lM),lS=(lM-lMi)*60,oMi=Math.floor(oM),oS=(oM-oMi)*60;
+  encSetV('e-ss-latd',lD);encSetV('e-ss-latm',lMi);encSetV('e-ss-lats',lS.toFixed(1));document.getElementById('e-ss-lath').value=lat>=0?'N':'S';
+  encSetV('e-ss-lond',oD);encSetV('e-ss-lonm',oMi);encSetV('e-ss-lons',oS.toFixed(1));document.getElementById('e-ss-lonh').value=lon>=0?'E':'W';
+}
+function encFillCanonical(lat,lon){
+  const la=Math.abs(lat),lo=Math.abs(lon);
+  let lD=Math.floor(la),lM=(la-lD)*60,lMi=Math.floor(lM),lMd=Math.round((lM-lMi)*1000);
+  if(lMd>=1000){lMd=0;lMi++;}if(lMi>=60){lMi=0;lD++;}
+  let oD=Math.floor(lo),oM=(lo-oD)*60,oMi=Math.floor(oM),oMd=Math.round((oM-oMi)*1000);
+  if(oMd>=1000){oMd=0;oMi++;}if(oMi>=60){oMi=0;oD++;}
+  encSetV('e-latd',lD);encSetV('e-latmi',lMi);encSetV('e-latmd',lMd);
+  encSetV('e-lond',oD);encSetV('e-lonmi',oMi);encSetV('e-lonmd',oMd);
+  setHem('lat',lat>=0?'N':'S');setHem('lon',lon>=0?'E':'W');
+  const vf={'e-latd':valLatD,'e-latmi':valLatMi,'e-latmd':valLatMd,'e-lond':valLonD,'e-lonmi':valLonMi,'e-lonmd':valLonMd};
+  Object.keys(vf).forEach(id=>{const el=document.getElementById(id);if(el&&el.value!=='')try{vf[id](el);}catch(e){}});
+}
+function encPosChanged(){
+  const num=id=>parseFloat(document.getElementById(id).value);
+  let lat,lon;
+  if(encFmt==='GG'){
+    const a=num('e-gg-lat'),o=num('e-gg-lon');if(isNaN(a)||isNaN(o))return;
+    lat=a*(document.getElementById('e-gg-lath').value==='S'?-1:1);lon=o*(document.getElementById('e-gg-lonh').value==='W'?-1:1);
+  }else{
+    const ld=num('e-ss-latd'),lm=num('e-ss-latm'),ls=num('e-ss-lats'),od=num('e-ss-lond'),om=num('e-ss-lonm'),os=num('e-ss-lons');
+    if([ld,lm,ls,od,om,os].some(isNaN))return;
+    lat=(ld+lm/60+ls/3600)*(document.getElementById('e-ss-lath').value==='S'?-1:1);
+    lon=(od+om/60+os/3600)*(document.getElementById('e-ss-lonh').value==='W'?-1:1);
+  }
+  encFillCanonical(lat,lon);encFillViews(lat,lon);
+}
+function encSetFmt(f){
+  const cur=encGetDec();
+  encFmt=f;
+  ['GG','GGMM','GGMMSS'].forEach(x=>{document.getElementById('ef-'+x).className='dec-mode-btn'+(x===f?' act':'');document.getElementById('enc-'+x).style.display=(x===f)?'':'none';});
+  encFillViews(cur.lat,cur.lon);
+}
+function encInit(){
+  ['e-latd','e-latmi','e-latmd','e-lond','e-lonmi','e-lonmd'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{const c=encGetDec();encFillViews(c.lat,c.lon);});
+  });
+  ['btn-N','btn-S','btn-W','btn-E'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.addEventListener('click',()=>setTimeout(()=>{const c=encGetDec();encFillViews(c.lat,c.lon);},0));
+  });
+}
+let decFmt='GGMM',decLastPos=null;
+function fmtPos(p,f){
+  const la=Math.abs(p.lat),lo=Math.abs(p.lon),lh=p.lat>=0?'N':'S',oh=p.lon>=0?'E':'W';
+  if(f==='GG')return la.toFixed(4)+'°'+lh+'  '+lo.toFixed(4)+'°'+oh;
+  const lD=Math.floor(la),lM=(la-lD)*60,oD=Math.floor(lo),oM=(lo-oD)*60;
+  if(f==='GGMM')return lD+'°'+lM.toFixed(3)+"'"+lh+'  '+oD+'°'+oM.toFixed(3)+"'"+oh;
+  const lMi=Math.floor(lM),lS=(lM-lMi)*60,oMi=Math.floor(oM),oS=(oM-oMi)*60;
+  return lD+'°'+lMi+"'"+lS.toFixed(1)+'"'+lh+'  '+oD+'°'+oMi+"'"+oS.toFixed(1)+'"'+oh;
+}
+function renderDecPos(){const el=document.getElementById('dec-pos-fmt');if(el)el.textContent=decLastPos?fmtPos(decLastPos,decFmt):'—';}
+function decSetFmt(f){
+  decFmt=f;
+  ['GG','GGMM','GGMMSS'].forEach(x=>document.getElementById('df-'+x).className='dec-mode-btn'+(x===f?' act':''));
+  renderDecPos();
 }
 function rpsInit(){
   document.getElementById('pane-rps').addEventListener('input',()=>{rpsDirty=true;});
@@ -3093,6 +3200,8 @@ function bindActions() {
       'rps-decode': () => rpsDecode(),
       'rps-clear': () => rpsClear(),
       'rps-exemplo': () => rpsLoadExample(),
+      'enc-fmt': () => encSetFmt(el.dataset.fmt),
+      'dec-fmt': () => decSetFmt(el.dataset.fmt),
       'load-encode-example': () => loadEncodeExample(),
       'clear-enc': () => clearEnc(),
       'export-json': () => exportJSON(el),
@@ -3459,6 +3568,7 @@ function syncInit() {
   setLockScreenVisible(!KEY);
   initPositionMap();
   rpsInit();
+  encInit();
 }
 
 (async()=>{
@@ -3587,7 +3697,7 @@ async function loadDecodeExample(){
 async function loadFieldsExample(){
   const report=await buildExampleReport();
   clearFields();
-  const FM={SER:'f-ser',CHK:'f-chk',KD:'f-kd',L1:'f-l1',L2:'f-l2',L3:'f-l3',L4:'f-l4',L5:'f-l5',L6:'f-l6',L7:'f-l7',L8:'f-l8',L9:'f-l9',L10:'f-l10',L11:'f-l11',L12:'f-l12',L13:'f-l13'};
+  const FM={LS:'f-ser',LC:'f-chk',LK:'f-kd',L1:'f-l1',L2:'f-l2',L3:'f-l3',L4:'f-l4',L5:'f-l5',L6:'f-l6',L7:'f-l7',L8:'f-l8',L9:'f-l9',L10:'f-l10',L11:'f-l11',L12:'f-l12',L13:'f-l13'};
   const NL=String.fromCharCode(10);
   report.split(NL).forEach(line=>{const i=line.indexOf(':');if(i<0)return;const el=document.getElementById(FM[line.slice(0,i).trim().toUpperCase()]);if(el)el.value=line.slice(i+1).trim();});
   setDecInputMode('fields');
