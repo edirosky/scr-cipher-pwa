@@ -889,6 +889,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
     .tbtn.m.act { color:var(--pu); border-bottom-color:var(--pu); }
     .tbtn.h.act { color:var(--yw); border-bottom-color:var(--yw); }
     .tbtn.n.act { color:var(--g); border-bottom-color:var(--g); }
+    .tbtn.r.act { color:#42e8ff; border-bottom-color:#42e8ff; }
+    .rps-map { width:100%; height:260px; border:1px solid var(--b); border-radius:var(--rad); background:#02070f; }
+    .fmt-tog { display:flex; gap:6px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
     #navios-frame { width:100%; height:calc(100vh - 170px); min-height:420px; border:1px solid var(--b); border-radius:6px; background:#fff; }
     .help-intro { font-size:12px; color:var(--mu); line-height:1.7; margin-bottom:14px; border-left:2px solid var(--b); padding-left:10px; }
     .faq { margin-bottom:14px; }
@@ -1010,6 +1013,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="tabs">
   <button class="tbtn e act" data-action="switch-tab" data-tab="enc" data-i18n="tab_encode">▲ ENCODE</button>
   <button class="tbtn d" data-action="switch-tab" data-tab="dec" data-i18n="tab_decode">▼ DECODE</button>
+  <button class="tbtn r" data-action="switch-tab" data-tab="rps" data-i18n="tab_rps">◈ REPORTE</button>
   <button class="tbtn m" data-action="switch-tab" data-tab="fon" data-i18n="tab_phon">≋ FONÉTICO</button>
   <button class="tbtn h" data-action="switch-tab" data-tab="help" data-i18n="tab_help">? AJUDA</button>
   <button class="tbtn n" data-action="switch-tab" data-tab="navios" data-i18n="tab_navios">⛎ NAVIOS</button>
@@ -1186,6 +1190,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       </div>
     </div>
 
+    <div class="pos-map-card">
+      <div class="st" style="margin-top:0" data-i18n="dec_map_title">POSIÇÃO DESCODIFICADA</div>
+      <div id="dec-map" class="rps-map"></div>
+    </div>
   </div>
 
   <!-- Aba: ferramentas fonéticas avulsas -->
@@ -1203,6 +1211,96 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <button class="btn bd" style="margin-top:8px;width:100%" data-action="phon-dec" data-i18n="phon_dec_btn">→ DECIFRAR + PT</button>
     <div class="fld" style="margin-top:10px"><label data-i18n="phon_dec_result_label">Texto descodificado</label><textarea id="ph-dec-out" rows="4" readonly style="color:var(--g)"></textarea></div>
     <button class="btn bc" style="margin-top:6px;width:100%" data-action="copy-field" data-copy-target="ph-dec-out" data-i18n="phon_dec_copy_btn">⊕ COPIAR</button>
+  </div>
+
+  <!-- Aba: reporte de navio/aeronave -->
+  <div id="pane-rps" class="pane">
+    <div class="st" data-i18n="rps_title">REPORTE · POSIÇÃO E ESTADO PRÓPRIO</div>
+    <div class="g2">
+      <div class="fld"><label data-i18n="rps_tipo_label">TIPO</label>
+        <div class="hem-tog">
+          <button class="hem-btn act" id="rps-tipo-N" data-action="rps-tipo" data-tipo="N">NAVIO</button>
+          <button class="hem-btn" id="rps-tipo-A" data-action="rps-tipo" data-tipo="A">AERONAVE</button>
+        </div>
+      </div>
+      <div class="fld"><label data-i18n="rps_sta_label">ESTADO DE NAVEGAÇÃO</label><select id="rps-sta"></select></div>
+    </div>
+    <div class="g2" style="margin-top:10px">
+      <div class="fld"><label data-i18n="rps_name_label">NOME / INDICATIVO</label><input type="text" id="rps-nam" maxlength="40" autocomplete="off"></div>
+      <div class="fld"><label data-i18n="rps_id_label">IDENTIFICAÇÃO (IMO / MMSI / MATRÍCULA)</label><input type="text" id="rps-id" maxlength="20" autocomplete="off"></div>
+    </div>
+    <div class="st" data-i18n="dtg_title">DTG</div>
+    <div class="g3">
+      <div class="fld"><label data-i18n="enc_date_label">Data (UTC)</label><input type="date" id="rps-date"></div>
+      <div class="fld"><label data-i18n="enc_time_label">Hora (UTC)</label><input type="time" id="rps-time"></div>
+      <div class="fld" style="justify-content:flex-end;padding-top:18px"><button class="btn bc" style="width:100%;padding:8px" data-action="rps-now">⊙ AGORA</button></div>
+    </div>
+    <div class="st" data-i18n="pos_title">POSIÇÃO</div>
+    <div class="fmt-tog">
+      <button class="dec-mode-btn" id="rf-GG" data-action="rps-fmt" data-fmt="GG">GG</button>
+      <button class="dec-mode-btn act" id="rf-GGMM" data-action="rps-fmt" data-fmt="GGMM">GGMM</button>
+      <button class="dec-mode-btn" id="rf-GGMMSS" data-action="rps-fmt" data-fmt="GGMMSS">GGMMSS</button>
+      <span class="vhint mu" id="rps-pos-preview" style="margin-left:auto">—</span>
+    </div>
+    <div id="rps-GG" style="display:none">
+      <div class="g2">
+        <div class="fld"><label>LAT °</label><div style="display:flex;gap:6px"><input type="number" id="rps-gg-lat" step="0.0001" min="0" max="90" oninput="rpsPosChanged()" style="flex:1"><select id="rps-gg-lath" onchange="rpsPosChanged()" style="width:64px"><option>N</option><option>S</option></select></div></div>
+        <div class="fld"><label>LON °</label><div style="display:flex;gap:6px"><input type="number" id="rps-gg-lon" step="0.0001" min="0" max="180" oninput="rpsPosChanged()" style="flex:1"><select id="rps-gg-lonh" onchange="rpsPosChanged()" style="width:64px"><option>E</option><option>W</option></select></div></div>
+      </div>
+    </div>
+    <div id="rps-GGMM">
+      <div class="g3">
+        <div class="fld"><label>LAT °</label><input type="number" id="rps-mm-latd" min="0" max="90" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>MIN '</label><input type="number" id="rps-mm-latm" step="0.001" min="0" max="59.999" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>N/S</label><select id="rps-mm-lath" onchange="rpsPosChanged()" style="width:64px"><option>N</option><option>S</option></select></div>
+      </div>
+      <div class="g3" style="margin-top:8px">
+        <div class="fld"><label>LON °</label><input type="number" id="rps-mm-lond" min="0" max="180" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>MIN '</label><input type="number" id="rps-mm-lonm" step="0.001" min="0" max="59.999" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>E/W</label><select id="rps-mm-lonh" onchange="rpsPosChanged()" style="width:64px"><option>E</option><option>W</option></select></div>
+      </div>
+    </div>
+    <div id="rps-GGMMSS" style="display:none">
+      <div class="g4">
+        <div class="fld"><label>LAT °</label><input type="number" id="rps-ss-latd" min="0" max="90" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>MIN '</label><input type="number" id="rps-ss-latm" min="0" max="59" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>SEC</label><input type="number" id="rps-ss-lats" step="0.1" min="0" max="59.9" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>N/S</label><select id="rps-ss-lath" onchange="rpsPosChanged()" style="width:64px"><option>N</option><option>S</option></select></div>
+      </div>
+      <div class="g4" style="margin-top:8px">
+        <div class="fld"><label>LON °</label><input type="number" id="rps-ss-lond" min="0" max="180" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>MIN '</label><input type="number" id="rps-ss-lonm" min="0" max="59" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>SEC</label><input type="number" id="rps-ss-lons" step="0.1" min="0" max="59.9" oninput="rpsPosChanged()"></div>
+        <div class="fld"><label>E/W</label><select id="rps-ss-lonh" onchange="rpsPosChanged()" style="width:64px"><option>E</option><option>W</option></select></div>
+      </div>
+    </div>
+    <div class="st" data-i18n="course_speed_title">RUMO &amp; VELOCIDADE</div>
+    <div class="g2">
+      <div class="fld"><label data-i18n="course_label">Rumo °T</label><input type="number" id="rps-crs" min="0" max="359"></div>
+      <div class="fld"><label data-i18n="rps_spd_label">Velocidade (kt)</label><input type="number" id="rps-spd" min="0" max="999.9" step="0.1"></div>
+    </div>
+    <div class="g2" style="margin-top:10px">
+      <div class="fld"><label data-i18n="rps_dest_label">DESTINO</label><input type="text" id="rps-dest" maxlength="30" autocomplete="off"></div>
+      <div class="fld"><label data-i18n="rps_obs_label">OBS</label><input type="text" id="rps-txt" maxlength="60" autocomplete="off"></div>
+    </div>
+    <div class="prow">
+      <button class="btn be" data-action="rps-encode">▲ CODIFICAR REPORTE</button>
+      <button class="btn bx" data-action="rps-clear">✕ LIMPAR</button>
+    </div>
+    <div id="rps-out" style="display:none">
+      <div class="ob"><span class="ol" data-i18n="report_label">REPORT · TRANSMITIR</span><pre id="rps-pre"></pre></div>
+      <div class="prow"><button class="btn bc" data-action="copy-out" data-copy-target="rps-pre" data-i18n="copy_btn">⊕ COPIAR</button></div>
+    </div>
+    <div class="pos-map-card">
+      <div class="st" style="margin-top:0" data-i18n="rps_map_title">MAPA DE POSIÇÃO</div>
+      <div id="rps-map" class="rps-map"></div>
+    </div>
+    <div class="sep-section"></div>
+    <div class="st" data-i18n="rps_dec_title">DESCODIFICAR REPORTE</div>
+    <div class="fld"><textarea id="rps-in" rows="6" placeholder="RPS:..."></textarea></div>
+    <div class="prow"><button class="btn bd" data-action="rps-decode">▼ DESCODIFICAR</button></div>
+    <div id="rps-dec-meta" class="meta-row"></div>
+    <div id="rps-dec-out" style="display:none"><div class="ob"><span class="ol" data-i18n="decode_result_title">REPORTE DESCODIFICADO</span><table class="dt" id="rps-tbl"></table></div></div>
   </div>
 
   <!-- Aba: ajuda e FAQ -->
@@ -1316,6 +1414,18 @@ const i18n = {
     tab_decode: "▼ DESCODIFICAR",
     tab_phon: "≋ FONÉTICO",
     tab_help: "? AJUDA",
+    tab_rps: "◈ REPORTE",
+    rps_title: "REPORTE · POSIÇÃO E ESTADO PRÓPRIO",
+    rps_tipo_label: "TIPO",
+    rps_sta_label: "ESTADO DE NAVEGAÇÃO",
+    rps_name_label: "NOME / INDICATIVO",
+    rps_id_label: "IDENTIFICAÇÃO (IMO / MMSI / MATRÍCULA)",
+    rps_spd_label: "Velocidade (kt)",
+    rps_dest_label: "DESTINO",
+    rps_obs_label: "OBS",
+    rps_map_title: "MAPA DE POSIÇÃO",
+    rps_dec_title: "DESCODIFICAR REPORTE",
+    dec_map_title: "POSIÇÃO DESCODIFICADA",
     tab_navios: "⛎ NAVIOS",
     navios_title: "FORMULÁRIO · NAVIOS ABORDADOS",
     navios_intro: "Registo online de embarcações abordadas/avistadas — sem cifra: os dados vão diretamente para a planilha COSMAR quando há internet, e ficam em fila local quando não há. Inicia sessão com o teu código de operador no formulário abaixo.",
@@ -1483,6 +1593,18 @@ const i18n = {
     tab_decode: "▼ DECODE",
     tab_phon: "≋ PHONETIC",
     tab_help: "? HELP",
+    tab_rps: "◈ REPORT",
+    rps_title: "REPORT · OWN POSITION AND STATUS",
+    rps_tipo_label: "TYPE",
+    rps_sta_label: "NAVIGATION STATUS",
+    rps_name_label: "NAME / CALLSIGN",
+    rps_id_label: "IDENTIFICATION (IMO / MMSI / REGISTRATION)",
+    rps_spd_label: "Speed (kt)",
+    rps_dest_label: "DESTINATION",
+    rps_obs_label: "OBS",
+    rps_map_title: "POSITION MAP",
+    rps_dec_title: "DECODE REPORT",
+    dec_map_title: "DECODED POSITION",
     tab_navios: "⛎ VESSELS",
     navios_title: "FORM · BOARDED VESSELS",
     navios_intro: "Online log of boarded/sighted vessels — no cipher: data goes straight to the COSMAR spreadsheet when online, and queues locally when offline. Sign in with your operator code in the form below.",
@@ -2562,6 +2684,7 @@ async function doDecode(){
     ...(keyAutoMsg?[{cls:'kwarn',text:keyAutoMsg}]:[])
   ]);
   const o=document.getElementById('dec-out');o.style.display='block';document.getElementById('dec-tbl').classList.remove('flash');void document.getElementById('dec-tbl').offsetWidth;document.getElementById('dec-tbl').classList.add('flash');
+  try{const pv=document.querySelector('#dec-tbl tr:nth-child(2) td:last-child');const pp=pv?parsePosDM(pv.textContent):null;if(pp)decShowPos(pp);}catch(e){}
 }
 
 // ══════════════════════════════════════════════════════
@@ -2594,6 +2717,7 @@ async function doDecodeFields(){
   document.getElementById('fields-tbl').classList.remove('flash');
   void document.getElementById('fields-tbl').offsetWidth;
   document.getElementById('fields-tbl').classList.add('flash');
+  try{const pv=document.querySelector('#fields-tbl tr:nth-child(2) td:last-child');const pp=pv?parsePosDM(pv.textContent):null;if(pp)decShowPos(pp);}catch(e){}
 }
 
 function clearFields() {
@@ -2628,6 +2752,153 @@ async function selfTest(){
 }
 function phEncFull(){if(!KEY){alert(iLang()==='pt'?'Ative a chave.':'Activate key.');return;}document.getElementById('ph-enc-out').value=encodeTextField(document.getElementById('ph-plain').value,KEY);}
 function phDecFull(){if(!KEY){alert(iLang()==='pt'?'Ative a chave.':'Activate key.');return;}document.getElementById('ph-dec-out').value=decodeTextField(document.getElementById('ph-dec-in').value,KEY);}
+// ══════════════════════════════════════════════════════
+//  REPORTE (navio/aeronave) + MAPAS MINI (decode/reporte)
+// ══════════════════════════════════════════════════════
+let rpsFmt='GGMM', rpsTipo='N', rpsMap=null, rpsMarker=null, decMap=null, decMarker=null;
+const RPS_MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const NAVSTAT={
+  N:[['A','A navegar a máquina / Underway using engine'],['B','Ao fundo / At anchor'],['C','À deriva / Drifting'],['D','Manobra restrita / Restricted manoeuvrability'],['E','Restrito por calado / Constrained by draught'],['F','Amarrado / Moored'],['G','Encalhado / Aground'],['H','Em operações / Engaged in operations'],['X','Outro / Other']],
+  A:[['A','Em cruzeiro / Cruising'],['B','Em subida / Climbing'],['C','Em descida / Descending'],['D','Em espera / Holding'],['E','Emergência / Emergency'],['F','Combustível mínimo / Fuel minimum'],['X','Outro / Other']]
+};
+function rpsSetTipo(t){
+  rpsTipo=t;
+  document.getElementById('rps-tipo-N').className='hem-btn'+(t==='N'?' act':'');
+  document.getElementById('rps-tipo-A').className='hem-btn'+(t==='A'?' act s':'');
+  const sel=document.getElementById('rps-sta');
+  sel.innerHTML=NAVSTAT[t].map(([c,l])=>`<option value="${c}">${c} · ${l}</option>`).join('');
+}
+function rpsSetFmt(f){
+  rpsFmt=f;
+  ['GG','GGMM','GGMMSS'].forEach(x=>{
+    document.getElementById('rf-'+x).className='dec-mode-btn'+(x===f?' act':'');
+    document.getElementById('rps-'+x).style.display=(x===f)?'':'none';
+  });
+  rpsPosChanged();
+}
+function rpsNum(id){return parseFloat(document.getElementById(id).value);}
+function rpsGetPos(){
+  if(rpsFmt==='GG'){
+    const la=rpsNum('rps-gg-lat'),lo=rpsNum('rps-gg-lon');
+    if(isNaN(la)||isNaN(lo))return null;
+    return {lat:la*(document.getElementById('rps-gg-lath').value==='S'?-1:1),lon:lo*(document.getElementById('rps-gg-lonh').value==='W'?-1:1)};
+  }
+  if(rpsFmt==='GGMM'){
+    const ld=rpsNum('rps-mm-latd'),lm=rpsNum('rps-mm-latm'),od=rpsNum('rps-mm-lond'),om=rpsNum('rps-mm-lonm');
+    if([ld,lm,od,om].some(isNaN))return null;
+    return {lat:(ld+lm/60)*(document.getElementById('rps-mm-lath').value==='S'?-1:1),lon:(od+om/60)*(document.getElementById('rps-mm-lonh').value==='W'?-1:1)};
+  }
+  const ld=rpsNum('rps-ss-latd'),lm=rpsNum('rps-ss-latm'),ls=rpsNum('rps-ss-lats'),od=rpsNum('rps-ss-lond'),om=rpsNum('rps-ss-lonm'),os=rpsNum('rps-ss-lons');
+  if([ld,lm,ls,od,om,os].some(isNaN))return null;
+  return {lat:(ld+lm/60+ls/3600)*(document.getElementById('rps-ss-lath').value==='S'?-1:1),lon:(od+om/60+os/3600)*(document.getElementById('rps-ss-lonh').value==='W'?-1:1)};
+}
+function rpsSetVal(id,v){const el=document.getElementById(id);if(el)el.value=v;}
+function rpsSetPos(lat,lon){
+  const la=Math.abs(lat),lo=Math.abs(lon);
+  rpsSetVal('rps-gg-lat',la.toFixed(4));document.getElementById('rps-gg-lath').value=lat>=0?'N':'S';
+  rpsSetVal('rps-gg-lon',lo.toFixed(4));document.getElementById('rps-gg-lonh').value=lon>=0?'E':'W';
+  const lD=Math.floor(la),lM=(la-lD)*60,oD=Math.floor(lo),oM=(lo-oD)*60;
+  rpsSetVal('rps-mm-latd',lD);rpsSetVal('rps-mm-latm',lM.toFixed(3));document.getElementById('rps-mm-lath').value=lat>=0?'N':'S';
+  rpsSetVal('rps-mm-lond',oD);rpsSetVal('rps-mm-lonm',oM.toFixed(3));document.getElementById('rps-mm-lonh').value=lon>=0?'E':'W';
+  const lMi=Math.floor(lM),lS=(lM-lMi)*60,oMi=Math.floor(oM),oS=(oM-oMi)*60;
+  rpsSetVal('rps-ss-latd',lD);rpsSetVal('rps-ss-latm',lMi);rpsSetVal('rps-ss-lats',lS.toFixed(1));document.getElementById('rps-ss-lath').value=lat>=0?'N':'S';
+  rpsSetVal('rps-ss-lond',oD);rpsSetVal('rps-ss-lonm',oMi);rpsSetVal('rps-ss-lons',oS.toFixed(1));document.getElementById('rps-ss-lonh').value=lon>=0?'E':'W';
+  rpsPosChanged();
+}
+function rpsPosChanged(){
+  const p=rpsGetPos();const el=document.getElementById('rps-pos-preview');
+  if(!p||Math.abs(p.lat)>90||Math.abs(p.lon)>180){if(el)el.textContent='—';return;}
+  if(el)el.textContent=`GG ${Math.abs(p.lat).toFixed(4)}°${p.lat>=0?'N':'S'}  ${Math.abs(p.lon).toFixed(4)}°${p.lon>=0?'E':'W'}`;
+  rpsShowPos(p);
+}
+function parsePosDM(s){
+  const m=String(s).match(/(\d{2,3})°([\d.]+)'([NSEW])/g);
+  if(!m||m.length!==2)return null;
+  const f=x=>{const g=x.match(/(\d+)°([\d.]+)'([NSEW])/);const v=parseInt(g[1])+parseFloat(g[2])/60;return(g[3]==='S'||g[3]==='W')?-v:v;};
+  return {lat:f(m[0]),lon:f(m[1])};
+}
+function ensureMiniMap(id){
+  const el=document.getElementById(id);if(!el||el._mini)return el._mini;
+  const m=L.map(id,{zoomControl:false,scrollWheelZoom:true,center:[20,0],zoom:2,minZoom:1,maxZoom:18});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:19}).addTo(m);
+  if(!navigator.onLine){try{const o=Object.keys(topoData.objects)[0];L.geoJSON(topojson.feature(topoData,topoData.objects[o]),{style:{color:'#39ff14',weight:.5,fillColor:'#0e2a3a',fillOpacity:.5}}).addTo(m);}catch(e){}}
+  el._mini=m;setTimeout(()=>m.invalidateSize(),60);
+  return m;
+}
+function miniShow(which,p,zoom){
+  const m=ensureMiniMap(which==='rps'?'rps-map':'dec-map');if(!m)return;
+  if(which==='rps'){if(!rpsMarker)rpsMarker=L.marker([p.lat,p.lon]).addTo(m);else rpsMarker.setLatLng([p.lat,p.lon]);m.setView([p.lat,p.lon],Math.max(m.getZoom(),zoom));rpsMap=m;}
+  else{if(!decMarker)decMarker=L.marker([p.lat,p.lon]).addTo(m);else decMarker.setLatLng([p.lat,p.lon]);m.setView([p.lat,p.lon],zoom);decMap=m;}
+}
+function rpsShowPos(p){miniShow('rps',p,9);}
+function decShowPos(p){miniShow('dec',p,9);}
+function rpsNow(){const d=new Date();rpsSetVal('rps-date',`${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`);rpsSetVal('rps-time',`${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`);}
+function rpsEncode(){
+  if(!KEY){alert(iLang()==='pt'?'Ative a chave de sessão.':'Activate session key.');return;}
+  const p=rpsGetPos();
+  if(!p||Math.abs(p.lat)>90||Math.abs(p.lon)>180){alert(iLang()==='pt'?'Posição inválida.':'Invalid position.');return;}
+  const dateStr=document.getElementById('rps-date').value,timeStr=document.getElementById('rps-time').value;
+  if(!dateStr||!timeStr){alert(iLang()==='pt'?'DTG incompleto.':'Incomplete DTG.');return;}
+  const dt=new Date(dateStr+'T'+timeStr+':00Z');
+  const dtg={day:dt.getUTCDate(),hr:dt.getUTCHours(),min:dt.getUTCMinutes(),mon:RPS_MON[dt.getUTCMonth()],yr:dt.getUTCFullYear()%100,dateStr};
+  const day=dtg.day;
+  const latD=Math.floor(Math.abs(p.lat)),latM=(Math.abs(p.lat)-latD)*60,lonD=Math.floor(Math.abs(p.lon)),lonM=(Math.abs(p.lon)-lonD)*60;
+  const crs=parseInt(document.getElementById('rps-crs').value)||0;
+  const spd=parseFloat(document.getElementById('rps-spd').value)||0;
+  const body=`KD:${dateStr}\nR1:${encodeDTG(dtg,KEY)}\nR2:${encodePos(latD,latM,p.lat>=0?'N':'S',lonD,lonM,p.lon>=0?'E':'W',KEY)}\nR3:${eDigs(pad(crs,3),10)}\nR4:${eDigs(spd.toFixed(1).replace('.','').padStart(4,'0'),13)}\nR5:${shiftCode(rpsTipo,day,true,KEY)}\nR6:${shiftCode(document.getElementById('rps-sta').value,day,true,KEY)}\nR7:${encodeTextField(document.getElementById('rps-nam').value.trim(),KEY)}\nR8:${encodeTextField(document.getElementById('rps-id').value.trim(),KEY)}\nR9:${encodeTextField(document.getElementById('rps-dest').value.trim(),KEY)}\nR10:${encodeTextField(document.getElementById('rps-txt').value.trim(),KEY)}`;
+  const ser=serialNo();const chk=checksum(body);
+  document.getElementById('rps-pre').textContent=`RPS:${ser}\nCHK:${chk}\n${body}`;
+  document.getElementById('rps-out').style.display='block';
+  rpsShowPos(p);
+}
+async function rpsDecode(){
+  if(!KEY){alert(iLang()==='pt'?'Ative a chave de sessão.':'Activate session key.');return;}
+  const raw=document.getElementById('rps-in').value.trim();
+  if(!raw){alert(iLang()==='pt'?'Cole um reporte RPS.':'Paste an RPS report.');return;}
+  const L={};raw.split(String.fromCharCode(10)).forEach(l=>{const i=l.indexOf(':');if(i>0)L[l.slice(0,i).trim().toUpperCase()]=l.slice(i+1).trim();});
+  const kd=L.KD||'';let decKey=KEY;
+  if(kd){const sp=loadStoredPass();if(sp)decKey=await deriveKey(sp,kd);}
+  const dtgR=decodeDTG(L.R1||'',decKey);const day=dtgR.day;
+  const posStr=L.R2?decodePos(L.R2,decKey):'—';
+  const p=parsePosDM(posStr);
+  const crs=L.R3?dDigs(L.R3,10,decKey):'—';
+  const spdRaw=L.R4?dDigs(L.R4,13,decKey):'';
+  const spd=spdRaw?((parseInt(spdRaw)||0)/10).toFixed(1):'—';
+  const tipo=L.R5?shiftCode(L.R5,day,false,decKey):'—';
+  const sta=L.R6?shiftCode(L.R6,day,false,decKey):'—';
+  const staLabel=(NAVSTAT[tipo]||NAVSTAT.N).find(x=>x[0]===sta);
+  const nam=L.R7&&L.R7!=='X'?decodeTextField(L.R7,decKey):'—';
+  const idn=L.R8&&L.R8!=='X'?decodeTextField(L.R8,decKey):'—';
+  const dest=L.R9&&L.R9!=='X'?decodeTextField(L.R9,decKey):'—';
+  const obs=L.R10&&L.R10!=='X'?decodeTextField(L.R10,decKey):'—';
+  const body=raw.split(String.fromCharCode(10)).filter(l=>!/^(RPS|CHK)\s*:/i.test(l)).join(String.fromCharCode(10));
+  const chkOk=!L.CHK||checksum(body)===L.CHK.toUpperCase();
+  renderDecodeMeta('rps-dec-meta',[
+    ...(L.RPS?[{cls:'ser',text:`RPS ${L.RPS}`}]:[]),
+    {cls:chkOk?'chk':'err',text:chkOk?'✓ CHK OK':'⚠ CHK MISMATCH'},
+    ...(kd?[{cls:'kd',text:`KD ${kd}`}]:[])
+  ]);
+  const lb=iLang()==='pt'
+    ?{dtg:'DTG',pos:'Posição',crs:'Rumo',spd:'Velocidade',tipo:'Tipo',sta:'Estado',nam:'Nome',idn:'Identificação',dest:'Destino',obs:'OBS'}
+    :{dtg:'DTG',pos:'Position',crs:'Course',spd:'Speed',tipo:'Type',sta:'Status',nam:'Name',idn:'ID',dest:'Destination',obs:'OBS'};
+  renderRows('rps-tbl',[
+    [lb.dtg,'R1',dtgR.plain],[lb.pos,'R2',posStr],[lb.crs,'R3',crs==='—'?'—':crs+'°T'],[lb.spd,'R4',spd==='—'?'—':spd+' kt'],
+    [lb.tipo,'R5',tipo==='N'?(iLang()==='pt'?'NAVIO':'SHIP'):tipo==='A'?(iLang()==='pt'?'AERONAVE':'AIRCRAFT'):tipo],
+    [lb.sta,'R6',sta+(staLabel?' · '+staLabel[1]:'')],[lb.nam,'R7',nam],[lb.idn,'R8',idn],[lb.dest,'R9',dest],[lb.obs,'R10',obs]
+  ]);
+  document.getElementById('rps-dec-out').style.display='block';
+  if(p){rpsSetPos(p.lat,p.lon);rpsShowPos(p);}
+}
+function rpsClear(){
+  ['rps-nam','rps-id','rps-crs','rps-spd','rps-dest','rps-txt','rps-in'].forEach(i=>rpsSetVal(i,''));
+  ['rps-gg-lat','rps-gg-lon','rps-mm-latd','rps-mm-latm','rps-mm-lond','rps-mm-lonm','rps-ss-latd','rps-ss-latm','rps-ss-lats','rps-ss-lond','rps-ss-lonm','rps-ss-lons'].forEach(i=>rpsSetVal(i,''));
+  document.getElementById('rps-out').style.display='none';
+  document.getElementById('rps-dec-out').style.display='none';
+  document.getElementById('rps-dec-meta').innerHTML='';
+  rpsPosChanged();
+}
+function rpsInit(){rpsSetTipo('N');rpsSetFmt('GGMM');rpsNow();}
+
 function cpField(id,btn){safeCopy(document.getElementById(id).value).then(()=>flashButton(btn,iLang()==='pt'?'✓ COPIADO':'✓ COPIED'));}
 
 function collectDraftData(){
@@ -2753,7 +3024,7 @@ function clearEnc(){
   latHem='N';lonHem='W';document.getElementById('btn-N').className='hem-btn act';document.getElementById('btn-S').className='hem-btn s';document.getElementById('btn-W').className='hem-btn act';document.getElementById('btn-E').className='hem-btn';updatePosPreview();
 }
 function clearDec(){document.getElementById('d-in').value='';document.getElementById('dec-out').style.display='none';document.getElementById('key-mismatch-banner').classList.remove('vis');}
-function sw(tab,el){document.querySelectorAll('.pane').forEach(p=>p.classList.remove('act'));document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));document.getElementById('pane-'+tab).classList.add('act');el.classList.add('act');if(tab==='navios'){const f=document.getElementById('navios-frame');if(f&&!f.src)f.src=f.dataset.src;}}
+function sw(tab,el){document.querySelectorAll('.pane').forEach(p=>p.classList.remove('act'));document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));document.getElementById('pane-'+tab).classList.add('act');el.classList.add('act');if(tab==='navios'){const f=document.getElementById('navios-frame');if(f&&!f.src)f.src=f.dataset.src;}if(tab==='rps'||tab==='dec'){setTimeout(()=>{['rps-map','dec-map'].forEach(id=>{const m=document.getElementById(id);if(m&&m._mini)m._mini.invalidateSize();});},80);}}
 
 // ══════════════════════════════════════════════════════
 //  DECODE INPUT MODE (report / campos individuais)
@@ -2791,6 +3062,12 @@ function bindActions() {
       'center-map-pos': () => centerMapOnPosition(),
       'do-encode': () => doEncode(),
       'self-test': () => selfTest(),
+      'rps-tipo': () => rpsSetTipo(el.dataset.tipo),
+      'rps-fmt': () => rpsSetFmt(el.dataset.fmt),
+      'rps-now': () => rpsNow(),
+      'rps-encode': () => rpsEncode(),
+      'rps-decode': () => rpsDecode(),
+      'rps-clear': () => rpsClear(),
       'load-encode-example': () => loadEncodeExample(),
       'clear-enc': () => clearEnc(),
       'export-json': () => exportJSON(el),
@@ -3156,6 +3433,7 @@ function syncInit() {
   useNow();
   setLockScreenVisible(!KEY);
   initPositionMap();
+  rpsInit();
 }
 
 (async()=>{
