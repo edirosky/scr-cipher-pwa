@@ -1285,6 +1285,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
     <div class="prow">
       <button class="btn be" data-action="rps-encode">▲ CODIFICAR REPORTE</button>
+      <button class="btn bc" data-action="rps-exemplo" data-i18n="example_btn">⊞ EXEMPLO</button>
       <button class="btn bx" data-action="rps-clear">✕ LIMPAR</button>
     </div>
     <div id="rps-out" style="display:none">
@@ -2768,6 +2769,7 @@ function rpsSetTipo(t){
   document.getElementById('rps-tipo-A').className='hem-btn'+(t==='A'?' act s':'');
   const sel=document.getElementById('rps-sta');
   sel.innerHTML=NAVSTAT[t].map(([c,l])=>`<option value="${c}">${c} · ${l}</option>`).join('');
+  if(!rpsDirty)rpsLoadExample();
 }
 function rpsSetFmt(f){
   rpsFmt=f;
@@ -2897,8 +2899,29 @@ function rpsClear(){
   document.getElementById('rps-dec-out').style.display='none';
   document.getElementById('rps-dec-meta').innerHTML='';
   rpsPosChanged();
+  rpsDirty=false;
 }
-function rpsInit(){rpsSetTipo('N');rpsSetFmt('GGMM');rpsNow();}
+// Exemplos prontos por tipo — o REPORTE abre sempre preenchido
+const RPS_EXEMPLO={
+  N:{lat:14.9205,lon:-23.5190,crs:45,spd:12.5,sta:'B',nam:'Pescador do Atlantico',id:'9123456 / 657123456',dest:'Dakar',obs:'Embarcacao suspeita sem bandeira, 3 tripulantes a bordo'},
+  A:{lat:28.4512,lon:-15.8903,crs:90,spd:240.5,sta:'A',nam:'ATLANTICO 1',id:'CS-ABC',dest:'Praia',obs:'Patrulha maritima de reconhecimento'}
+};
+let rpsDirty=false;
+function rpsLoadExample(){
+  const ex=RPS_EXEMPLO[rpsTipo]||RPS_EXEMPLO.N;
+  const n=new Date();
+  rpsSetVal('rps-date',`${n.getUTCFullYear()}-${pad(n.getUTCMonth()+1)}-${pad(n.getUTCDate())}`);
+  rpsSetVal('rps-time',rpsTipo==='N'?'14:30':'09:15');
+  rpsSetPos(ex.lat,ex.lon);
+  rpsSetVal('rps-crs',ex.crs);rpsSetVal('rps-spd',ex.spd);
+  document.getElementById('rps-sta').value=ex.sta;
+  rpsSetVal('rps-nam',ex.nam);rpsSetVal('rps-id',ex.id);rpsSetVal('rps-dest',ex.dest);rpsSetVal('rps-txt',ex.obs);
+  rpsDirty=false;
+}
+function rpsInit(){
+  document.getElementById('pane-rps').addEventListener('input',()=>{rpsDirty=true;});
+  rpsSetTipo('N');rpsSetFmt('GGMM');rpsLoadExample();
+}
 
 function cpField(id,btn){safeCopy(document.getElementById(id).value).then(()=>flashButton(btn,iLang()==='pt'?'✓ COPIADO':'✓ COPIED'));}
 
@@ -3069,6 +3092,7 @@ function bindActions() {
       'rps-encode': () => rpsEncode(),
       'rps-decode': () => rpsDecode(),
       'rps-clear': () => rpsClear(),
+      'rps-exemplo': () => rpsLoadExample(),
       'load-encode-example': () => loadEncodeExample(),
       'clear-enc': () => clearEnc(),
       'export-json': () => exportJSON(el),
