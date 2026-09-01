@@ -7,7 +7,7 @@
    - Tiles OSM: stale-while-revalidate com limite LRU
    ============================================================ */
 
-const VERSION = "v14";
+const VERSION = "v15";
 const SHELL_CACHE = `scr-cipher-shell-${VERSION}`;
 const TILE_CACHE = `scr-cipher-tiles-${VERSION}`;
 const MAX_TILE_ENTRIES = 600;
@@ -128,7 +128,11 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(async () => {
           const cache = await caches.open(SHELL_CACHE);
+          let dirIndex = null;
+          try { dirIndex = new URL("index.html", request.url).href; } catch (e) {}
           return (
+            (await cache.match(request)) ||
+            (dirIndex ? await cache.match(dirIndex) : null) ||
             (await cache.match("./index.html")) ||
             (await cache.match("./")) ||
             (await cache.match("./offline.html")) ||
